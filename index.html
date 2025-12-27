@@ -3,199 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mindful Talk (V18.0)</title>
+    <title>Mindful Talk (V19 Stable)</title>
     <style>
         :root {
-            /* 莫兰迪高级色系 */
-            --primary: #8FA87A;       /* 橄榄绿 */
-            --primary-dark: #6C8558;
-            --accent: #E6B450;        /* 暖金 */
-            --bg-body: #F7F8FA;
-            --bg-card: #FFFFFF;
-            --text-main: #333333;
-            --text-sub: #888888;
+            --primary: #8FA87A; --primary-dark: #6C8558; --accent: #E6B450;
+            --bg-body: #F7F8FA; --bg-card: #FFFFFF;
+            --text-main: #333333; --text-sub: #888888;
             --shadow-card: 0 8px 24px rgba(0,0,0,0.05);
-            
-            /* 角色色 */
             --color-a: #8FA87A; --bg-a: #F1F6EE;
             --color-b: #E08C66; --bg-b: #FFF5F0;
         }
-
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #222; color: var(--text-main);
-            margin: 0; display: flex; justify-content: center; height: 100vh; overflow: hidden;
-        }
-
-        #app-container {
-            width: 100%; max-width: 420px; height: 100%;
-            background: var(--bg-body);
-            position: relative; display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-        }
-
-        /* 屏幕通用 */
-        .screen {
-            flex: 1; position: relative; overflow-y: auto; overflow-x: hidden;
-            padding: 24px; padding-bottom: 100px;
-            display: none; flex-direction: column;
-            animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif; background-color: #222; color: var(--text-main); margin: 0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+        #app-container { width: 100%; max-width: 420px; height: 100%; background: var(--bg-body); position: relative; display: flex; flex-direction: column; }
+        .screen { flex: 1; position: relative; overflow-y: auto; padding: 24px; padding-bottom: 100px; display: none; flex-direction: column; animation: fadeIn 0.4s ease; }
         .screen.active { display: flex; }
-        .screen::-webkit-scrollbar { display: none; }
-
-        /* 首页优化 */
-        .home-header { margin-top: 40px; text-align: center; }
-        .home-header h1 { font-size: 28px; font-weight: 600; color: var(--primary-dark); margin: 0; }
         
-        /* 核心修复：输入框容器与宽度 */
-        .input-group { 
-            background: var(--bg-card); padding: 20px; border-radius: 20px; 
-            box-shadow: var(--shadow-card); width: 100%; margin-top: 20px;
-        }
-        /* 强制 box-sizing 且 width 100% */
-        input[type="text"], input[type="password"] {
-            width: 100%; padding: 14px; margin: 6px 0; 
-            border: 1px solid transparent; background: #F9F9F9; 
-            border-radius: 12px; font-size: 16px; text-align: center; outline: none;
-            color: var(--text-main); box-sizing: border-box; /* 关键 */
-        }
-        input[type="text"]:focus { background: #fff; box-shadow: 0 0 0 2px var(--primary); }
-
-        .start-btn-wrapper { position: relative; width: 150px; height: 150px; margin: 30px auto 10px auto; }
-        .big-btn {
-            width: 100%; height: 100%; border-radius: 50%; border: none;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; font-size: 18px; font-weight: 600;
-            box-shadow: 0 15px 40px rgba(143, 168, 122, 0.3); cursor: pointer;
-            position: relative; z-index: 2; transition: transform 0.2s;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
+        /* 首页 */
+        .home-header { margin-top: 40px; text-align: center; }
+        .home-header h1 { font-size: 28px; color: var(--primary-dark); margin: 0; }
+        .start-btn-wrapper { position: relative; width: 150px; height: 150px; margin: 30px auto; }
+        .big-btn { width: 100%; height: 100%; border-radius: 50%; border: none; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; font-size: 18px; font-weight: 600; box-shadow: 0 15px 40px rgba(143,168,122,0.3); cursor: pointer; position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.2s; }
         .big-btn:active { transform: scale(0.96); }
-        .pulse-ring {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 50%; border: 1px solid var(--primary);
-            animation: pulse 2.5s infinite; z-index: 1; pointer-events: none;
-        }
+        .pulse-ring { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--primary); animation: pulse 2.5s infinite; z-index: 1; pointer-events: none; }
+        
+        .input-group { background: var(--bg-card); padding: 20px; border-radius: 20px; box-shadow: var(--shadow-card); width: 100%; margin-top: 20px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 14px; margin: 6px 0; border: 1px solid transparent; background: #F9F9F9; border-radius: 12px; font-size: 16px; text-align: center; outline: none; }
+        input:focus { background: #fff; box-shadow: 0 0 0 2px var(--primary); }
+        .help-link { text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-sub); text-decoration: underline; opacity: 0.8; }
 
-        /* 使用说明链接 */
-        .help-link { 
-            text-align: center; margin-top: 15px; font-size: 13px; 
-            color: var(--text-sub); text-decoration: underline; cursor: pointer; 
-            opacity: 0.8;
-        }
-
-        /* 计时页 */
+        /* 计时 */
         .timer-wrapper { position: relative; width: 220px; height: 220px; margin: 20px auto; }
         svg.timer-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
         circle { fill: none; stroke-width: 6; stroke-linecap: round; }
         .ring-bg { stroke: #E0E0E0; opacity: 0.3; }
-        .ring-progress { stroke: var(--primary); stroke-dasharray: 700; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear, stroke 0.5s ease; }
+        .ring-progress { stroke: var(--primary); stroke-dasharray: 700; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
         
-        .role-card {
-            background: var(--bg-card); border-radius: 16px; padding: 15px 20px; margin-bottom: 12px;
-            border-left: 5px solid #eee; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: var(--shadow-card); transition: 0.3s;
-        }
+        .role-card { background: var(--bg-card); border-radius: 16px; padding: 15px; margin-bottom: 12px; border-left: 5px solid #eee; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card); transition: 0.3s; }
         .role-card.active-a { border-left-color: var(--color-a); background: var(--bg-a); transform: scale(1.02); }
         .role-card.active-b { border-left-color: var(--color-b); background: var(--bg-b); transform: scale(1.02); }
         .role-card.inactive { opacity: 0.5; filter: grayscale(1); }
 
-        /* 详情页 */
+        /* 详情与历史 */
         .detail-card { background: var(--bg-card); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow-card); }
         .section-title { font-size: 14px; font-weight: 700; color: var(--text-sub); margin-bottom: 15px; display: block; border-left: 3px solid var(--primary); padding-left: 10px; }
-        
-        .insight-content { font-size: 15px; line-height: 1.8; color: #444; }
         .insight-content h4 { margin: 15px 0 8px 0; color: var(--primary-dark); font-size: 16px; background: #f4f8f4; padding: 8px; border-radius: 8px; }
-        .insight-content strong { color: #333; font-weight: 600; }
-        .insight-content ul { padding-left: 20px; margin: 5px 0; }
-        .insight-content li { margin-bottom: 8px; }
-
-        .chat-bubble { padding: 14px 18px; border-radius: 18px; font-size: 15px; line-height: 1.6; max-width: 85%; position: relative; margin-bottom: 15px; }
+        .insight-content li { margin-bottom: 5px; }
+        
+        .chat-bubble { padding: 14px; border-radius: 18px; font-size: 15px; line-height: 1.6; position: relative; margin-bottom: 15px; max-width: 85%; }
         .bubble-left { background: var(--bg-a); border-top-left-radius: 4px; margin-right: auto; }
         .bubble-right { background: var(--bg-b); border-top-right-radius: 4px; margin-left: auto; }
-        .bubble-tag { font-size: 11px; font-weight: bold; opacity: 0.7; margin-bottom: 4px; display: block; text-transform: uppercase; }
-
-        /* 使用说明页样式 */
-        .help-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow-card); }
-        .help-card h3 { color: var(--primary-dark); margin: 0 0 10px 0; font-size: 16px; }
-        .help-card p { font-size: 14px; color: #555; line-height: 1.6; margin: 0; }
-        .step-num { display: inline-block; width: 20px; height: 20px; background: var(--accent); color: white; border-radius: 50%; text-align: center; line-height: 20px; font-size: 12px; margin-right: 5px; }
-
-        /* 底部导航 */
-        #tab-bar {
-            position: absolute; bottom: 20px; left: 20px; right: 20px; height: 70px;
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
-            border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            display: flex; justify-content: space-around; align-items: center; z-index: 999;
-        }
-        .tab-item { flex: 1; text-align: center; color: #BBB; font-size: 24px; transition: 0.3s; }
-        .tab-item.active { color: var(--primary-dark); transform: scale(1.1); }
-
-        /* 通用按钮 */
-        .btn-full {
-            width: 100%; padding: 16px; border-radius: 50px; border: none;
-            background: var(--primary); color: white; font-size: 16px; font-weight: 600;
-            box-shadow: 0 8px 20px rgba(143, 168, 122, 0.4); cursor: pointer; transition: 0.2s;
-        }
-        .btn-full:active { transform: scale(0.98); }
-        .settings-icon { position: absolute; top: 20px; left: 20px; font-size: 24px; color: #ccc; cursor: pointer; z-index: 100; }
-
-        /* 弹窗优化 */
-        .modal-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
-        }
-        /* 修复：使用 box-sizing 和 max-width 防止溢出 */
-        .modal-box { 
-            background: white; width: 85%; max-width: 320px; 
-            padding: 25px; border-radius: 24px; text-align: center; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            box-sizing: border-box; 
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.9); opacity: 0; } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .bubble-tag { font-size: 11px; font-weight: bold; opacity: 0.7; display: block; text-transform: uppercase; margin-bottom: 4px; }
         
-        /* 历史列表 */
-        .history-item { background: var(--bg-card); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-card); display: flex; align-items: center; }
-        .h-icon { width: 44px; height: 44px; border-radius: 12px; background: #F0F2F5; color: #999; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 15px; }
-        .h-icon.done { background: var(--bg-a); color: var(--color-a); }
         /* 日历 */
         .cal-header { display: flex; justify-content: space-between; padding: 10px 0; cursor: pointer; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; display: none; }
-        .cal-grid.show { display: grid; animation: slideDown 0.3s ease; }
+        .cal-grid.show { display: grid; }
         .cal-day { height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; position: relative; }
         .cal-day.active { background: var(--primary); color: white; }
         .cal-day.has-data::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
         .cal-day.active.has-data::after { background: white; }
 
+        .history-item { background: var(--bg-card); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-card); display: flex; align-items: center; }
+        .h-icon { width: 44px; height: 44px; border-radius: 12px; background: #F0F2F5; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 15px; }
+
+        /* 底部导航 */
+        #tab-bar { position: absolute; bottom: 20px; left: 20px; right: 20px; height: 70px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 999; }
+        .tab-item { flex: 1; text-align: center; color: #BBB; font-size: 24px; transition: 0.3s; }
+        .tab-item.active { color: var(--primary-dark); transform: scale(1.1); }
+
+        /* 通用按钮 */
+        .btn-full { width: 100%; padding: 16px; border-radius: 50px; border: none; background: var(--primary); color: white; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .settings-icon { position: absolute; top: 20px; left: 20px; font-size: 24px; color: #ccc; cursor: pointer; z-index: 100; }
+        
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+
+        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.9); opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div id="app-container">
-
     <div id="tab-home" class="screen active" style="align-items: center; justify-content: center;">
         <div class="settings-icon" onclick="openSettings()">⚙️</div>
-        <div class="home-header">
-            <h1>Mindful Talk</h1>
-            <p style="letter-spacing: 2px; color: var(--text-sub); margin-top: 5px;">RELATIONSHIP GROWTH</p>
-        </div>
+        <div class="home-header"><h1>Mindful Talk</h1><p style="color:var(--text-sub); margin-top:5px; letter-spacing:2px;">RELATIONSHIP GROWTH</p></div>
         <div class="start-btn-wrapper">
             <div class="pulse-ring"></div>
             <button class="big-btn" onclick="checkPermissionAndStart()">
-                <span style="font-size: 32px; margin-bottom: 5px;">🎙</span>
-                开始
+                <span style="font-size: 32px; margin-bottom: 5px;">🎙</span>开始
             </button>
         </div>
-        
         <div class="help-link" onclick="showScreen('screen-help')">👉 如何使用本应用？</div>
-
         <div class="input-group">
             <input type="text" id="nameA" placeholder="您的名字 (A / 讲述者)">
             <input type="text" id="nameB" placeholder="伴侣名字 (B / 倾听者)">
@@ -203,33 +103,14 @@
     </div>
 
     <div id="screen-help" class="screen" style="background: #F7F8FA;">
-        <div style="margin-bottom: 20px; display: flex; align-items: center;">
-            <button onclick="showScreen('tab-home')" style="border:none; background:none; font-size:24px; margin-right:10px;">←</button>
-            <h2 style="margin:0; font-size: 20px; color: var(--text-main);">使用指南</h2>
+        <div style="margin-bottom:20px;"><button onclick="showScreen('tab-home')" style="border:none; background:none; font-size:24px;">←</button> <span style="font-size:20px; font-weight:bold;">使用指南</span></div>
+        <div class="detail-card">
+            <h4>⏳ 3-2-1 沟通法则</h4>
+            <p style="font-size:14px; color:#555;">1. <strong>A讲述(3分钟)</strong>：只谈感受，不指责。<br>2. <strong>B复述(2分钟)</strong>：确认理解，不辩解。<br>3. <strong>交流(1分钟)</strong>：核对后交换角色。</p>
         </div>
-
-        <div class="help-card">
-            <h3>⏳ 3-2-1 沟通法则</h3>
-            <p><span class="step-num">1</span><strong>A 讲述 (3分钟)</strong>：A 专注表达感受，使用“我感到...”句式。B 保持沉默，不打断。</p>
-            <div style="height:10px;"></div>
-            <p><span class="step-num">2</span><strong>B 复述 (2分钟)</strong>：B 复述听到的内容，确认理解是否准确，不反驳，不辩解。</p>
-            <div style="height:10px;"></div>
-            <p><span class="step-num">3</span><strong>自由交流 (1分钟)</strong>：双方核对感受，然后交换角色。</p>
-        </div>
-
-        <div class="help-card">
-            <h3>🤖 AI 深度洞察</h3>
-            <p>对话结束后，AI 将作为您的“私人咨询师”，基于录音分析：</p>
-            <ul style="margin: 10px 0; padding-left: 20px; color: #555; font-size: 13px;">
-                <li>识别表层情绪背后的深层需求</li>
-                <li>评估倾听与复述的质量</li>
-                <li>提供非暴力沟通(NVC)话术建议</li>
-            </ul>
-        </div>
-
-        <div class="help-card">
-            <h3>🔒 隐私安全</h3>
-            <p>所有录音和 API Key 均存储在您的本地手机浏览器中。API 调用仅在分析时进行，不会用于训练模型。</p>
+        <div class="detail-card">
+            <h4>🤖 AI 咨询师</h4>
+            <p style="font-size:14px; color:#555;">对话结束后，AI 将分析你们的情绪模式、依恋需求，并给出非暴力沟通建议。</p>
         </div>
     </div>
 
@@ -237,72 +118,42 @@
         <div class="timer-wrapper">
             <svg class="timer-svg"><circle class="ring-bg" cx="110" cy="110" r="100"></circle><circle class="ring-progress" id="timer-ring" cx="110" cy="110" r="100"></circle></svg>
             <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
-                <div id="round-badge" style="font-size:12px; color:#999; letter-spacing:1px; margin-bottom:5px;">ROUND 1</div>
-                <div id="time-display" style="font-size:48px; font-weight:300; color:var(--text-main);">03:00</div>
+                <div id="round-badge" style="font-size:12px; color:#999;">ROUND 1</div>
+                <div id="time-display" style="font-size:48px; color:var(--text-main);">03:00</div>
             </div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-            <div class="role-card" id="card-top">
-                <div><div style="font-size:10px; color:#999; font-weight:700;">SPEAKER</div><div style="font-size:18px; font-weight:600;" id="name-top">A</div></div>
-                <div style="font-size:13px; color:#666;" id="instr-top">...</div>
-            </div>
-            <div class="role-card" id="card-bottom">
-                <div><div style="font-size:10px; color:#999; font-weight:700;">LISTENER</div><div style="font-size:18px; font-weight:600;" id="name-bottom">B</div></div>
-                <div style="font-size:13px; color:#666;" id="instr-bottom">...</div>
-            </div>
+            <div class="role-card" id="card-top"><div><div style="font-size:10px; color:#999;">SPEAKER</div><b id="name-top">A</b></div><div style="font-size:13px;" id="instr-top">...</div></div>
+            <div class="role-card" id="card-bottom"><div><div style="font-size:10px; color:#999;">LISTENER</div><b id="name-bottom">B</b></div><div style="font-size:13px;" id="instr-bottom">...</div></div>
         </div>
-        <div style="text-align:center;">
-            <div style="font-size:12px; color:var(--primary); margin-bottom:15px;">🔴 录音进行中...</div>
-            <button onclick="skipPhase()" style="border:1px solid #eee; background:white; padding:8px 20px; border-radius:20px; color:#999; font-size:12px;">跳过阶段</button>
-        </div>
+        <div style="text-align:center;"><button onclick="skipPhase()" style="border:1px solid #eee; background:white; padding:8px 20px; border-radius:20px; color:#999;">跳过阶段</button></div>
     </div>
 
     <div id="screen-interim" class="screen" style="justify-content:center; text-align:center;">
-        <h2 id="interim-title" style="font-size:24px;">交换</h2>
+        <h2 id="interim-title">交换</h2>
         <p id="interim-desc" style="color:var(--text-sub); margin-bottom:30px;">...</p>
         <button class="btn-full" onclick="resumeFlow()">继续</button>
     </div>
 
     <div id="screen-paywall" class="screen" style="justify-content:center; text-align:center;">
         <div style="font-size:60px; margin-bottom:20px;">✨</div>
-        <h2 style="font-size:22px;">对话完成</h2>
-        <p style="color:var(--text-sub); margin-bottom:40px;">录音已保存。点击生成深度分析报告。</p>
+        <h2>对话完成</h2>
+        <p style="color:var(--text-sub); margin-bottom:40px;">点击生成深度心理分析报告。</p>
         <button class="btn-full" style="background: linear-gradient(135deg, var(--accent), #FDC830);" onclick="startBatchProcessing()">生成 AI 洞察 (API)</button>
-        <button onclick="saveOnly()" style="background:none; border:none; color:#bbb; margin-top:20px; font-size:13px; text-decoration:underline;">仅保存录音</button>
+        <button onclick="saveOnly()" style="background:none; border:none; color:#bbb; margin-top:20px; text-decoration:underline;">仅保存录音</button>
     </div>
 
     <div id="screen-detail" class="screen" style="background:#F7F8FA; z-index:100;">
-        <div style="display:flex; align-items:center; margin-bottom:20px;">
-            <button onclick="switchTab('history')" style="background:white; width:40px; height:40px; border-radius:50%; border:none; box-shadow:var(--shadow-card);">←</button>
-            <div style="margin-left:15px;">
-                <div style="font-weight:700; font-size:16px;">分析报告</div>
-                <div id="d-date" style="font-size:12px; color:#999;"></div>
-            </div>
-        </div>
-        
-        <div class="detail-card">
-            <span class="section-title">🎧 全程回放</span>
-            <audio id="d-full-audio" controls style="width:100%; height:36px; outline:none;"></audio>
-        </div>
-
-        <div class="detail-card" style="border-top: 3px solid var(--accent);">
-            <span class="section-title">💡 深度心理洞察</span>
-            <div id="d-insight" class="insight-content"></div>
-        </div>
-
-        <div class="detail-card">
-            <span class="section-title">📝 逐字稿</span>
-            <div id="d-transcript-box"></div>
-        </div>
+        <div style="margin-bottom:20px;"><button onclick="switchTab('history')" style="background:white; width:40px; height:40px; border-radius:50%; border:none; box-shadow:var(--shadow-card);">←</button> <span style="margin-left:10px; font-weight:bold;">分析报告</span> <span id="d-date" style="float:right; font-size:12px; color:#999; margin-top:10px;"></span></div>
+        <div class="detail-card"><span class="section-title">🎧 全程回放</span><audio id="d-full-audio" controls style="width:100%; height:36px;"></audio></div>
+        <div class="detail-card" style="border-top:3px solid var(--accent);"><span class="section-title">💡 深度洞察</span><div id="d-insight" class="insight-content"></div></div>
+        <div class="detail-card"><span class="section-title">📝 逐字稿</span><div id="d-transcript-box"></div></div>
     </div>
 
     <div id="tab-history" class="screen">
-        <h2 style="margin:20px 0; font-size:24px;">成长档案</h2>
+        <h2 style="margin:20px 0;">成长档案</h2>
         <div class="detail-card" style="padding:15px;">
-            <div class="cal-header" onclick="toggleCalendar()">
-                <span style="font-weight:600;">📅 按日期筛选</span>
-                <span style="color:#bbb;">▼</span>
-            </div>
+            <div class="cal-header" onclick="toggleCalendar()"><span style="font-weight:600;">📅 按日期筛选</span><span>▼</span></div>
             <div class="cal-grid" id="cal-grid"></div>
             <div id="reset-filter-btn" style="text-align:center; padding-top:10px; font-size:12px; color:var(--primary); display:none;" onclick="resetFilter()">显示全部</div>
         </div>
@@ -314,71 +165,54 @@
         <div class="tab-item" id="btn-history" onclick="switchTab('history')">📅</div>
     </div>
 
-    <div id="modal-loading" class="modal-overlay"><div class="modal-box"><div style="font-size:30px;animation:pulse 1s infinite;">🧠</div><h3 id="loading-txt">AI 深度分析中...</h3></div></div>
-    
-    <div id="modal-settings" class="modal-overlay">
-        <div class="modal-box">
-            <h3>API 设置</h3>
-            <p style="font-size:12px; color:#999;">SiliconFlow / OpenAI</p>
-            <input type="password" id="apiKeyInput" placeholder="sk-..." style="margin-bottom: 15px;">
-            <button class="btn-full" onclick="saveSettings()" style="margin-top:5px;">保存</button>
-            <button onclick="document.getElementById('modal-settings').style.display='none'" style="border:none; background:none; color:#999; margin-top:10px;">关闭</button>
-        </div>
-    </div>
-
+    <div id="modal-loading" class="modal-overlay"><div class="modal-box"><div style="font-size:30px;animation:pulse 1s infinite;">🧠</div><h3 id="loading-txt">AI 分析中...</h3></div></div>
+    <div id="modal-settings" class="modal-overlay"><div class="modal-box"><h3>API 设置</h3><input type="password" id="apiKeyInput" placeholder="sk-..." style="margin-bottom:15px;"><button class="btn-full" onclick="saveSettings()">保存</button><button onclick="document.getElementById('modal-settings').style.display='none'" style="border:none; background:none; color:#999; margin-top:10px;">关闭</button></div></div>
 </div>
 
 <script>
-    const DB_NAME = 'MindfulTalk_V18';
+    // === 1. 数据库与日期工具 ===
+    const DB_NAME = 'MindfulTalk_V19';
     let db;
+    // 统一日期格式化函数 (YYYY/MM/DD)
+    const getTodayStr = () => { const d=new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`; };
+    
     function initDB() {
         const r = indexedDB.open(DB_NAME, 1);
         r.onupgradeneeded = e => { db = e.target.result; if(!db.objectStoreNames.contains('sessions')) db.createObjectStore('sessions', {keyPath: 'id'}); };
-        r.onsuccess = async e => { 
+        r.onsuccess = e => { 
             db = e.target.result; 
             const tx = db.transaction(['sessions'], 'readonly');
-            if(tx.objectStore('sessions').count().result === 0) seedMockData();
-            loadHistoryList();
+            const req = tx.objectStore('sessions').count();
+            req.onsuccess = () => { if(req.result === 0) seedMockData(); else loadHistoryList(); };
         };
     }
-    // Mock Data with Rich Text
+    
     function seedMockData() {
         const mockBlob = new Blob([""], { type: 'audio/webm' });
-        const today = new Date().toLocaleDateString();
-        const mocks = [
-            { 
-                id: 1001, date: today, timestamp: Date.now(), 
-                title: "演示：家务分配的深度沟通", 
-                insight: `<h4>1. 非暴力沟通 (NVC) 分析</h4>
-                          <ul>
-                            <li><strong>观察</strong>: Alex 提到“这周地没人拖”。</li>
-                            <li><strong>感受</strong>: Alex 表达了“疲惫”和“孤单”。</li>
-                            <li><strong>需要</strong>: 渴望“支持”和“家庭共担”。</li>
-                          </ul>
-                          <h4>2. 情绪聚焦疗法 (EFT) 视角</h4>
-                          <p>Jamie 的防御性回答（“我也很忙”）掩盖了深层的<strong>不安全感</strong>——担心自己做得不够好而被指责。</p>
-                          <h4>3. 倾听质量</h4>
-                          <p>Jamie 在复述时加入了辩解，没有完全接纳 Alex 的情绪。建议下次只复述，不解释。</p>`,
-                segments: [{speaker:"Alex", role:"讲述", text:"我觉得这周很累，地都没人拖。", blob:mockBlob}, {speaker:"Jamie", role:"复述", text:"你觉得累是因为没人拖地？但我这周也很忙啊。", blob:mockBlob}] 
-            }
-        ];
+        const mocks = [{ 
+            id: 1001, date: getTodayStr(), timestamp: Date.now(), 
+            title: "演示：家务分配沟通", 
+            insight: "<h4>💡 演示数据</h4><p>这是系统生成的演示记录。AI 分析将包含：<br>• 情绪底色识别<br>• 依恋需求分析<br>• 具体的 NVC 话术建议</p>",
+            segments: [{speaker:"Alex", role:"讲述", text:"我觉得很累。", blob:mockBlob}] 
+        }];
         const tx = db.transaction(['sessions'], 'readwrite');
         mocks.forEach(m => tx.objectStore('sessions').add(m));
+        tx.oncomplete = () => loadHistoryList();
     }
     window.onload = initDB;
 
+    // === 2. 状态变量 ===
     const COLORS = { A: '#8FA87A', B: '#E08C66', Neutral: '#888' };
-    let names = { A: "Alex", B: "Jamie" }; // 内部默认变量，但界面上显示为空
+    let names = { A: "A", B: "B" };
     let phases = [], phaseIdx = 0, timerInterval;
     let mediaRecorder, audioChunks = [], sessionSegments = [];
     let supportedMime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
 
+    // === 3. 业务逻辑 ===
     function checkPermissionAndStart() {
-        // 获取用户输入，如果为空则使用默认 A/B，但不持久化到输入框显示
         const inputA = document.getElementById('nameA').value.trim();
         const inputB = document.getElementById('nameB').value.trim();
-        names.A = inputA || "A";
-        names.B = inputB || "B";
+        names.A = inputA || "A"; names.B = inputB || "B";
 
         navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
             mediaRecorder = new MediaRecorder(stream, { mimeType: supportedMime });
@@ -390,7 +224,7 @@
                 proceedNext();
             };
             startSession();
-        }).catch(e => alert("需麦克风权限"));
+        }).catch(e => alert("无法开始：请允许麦克风权限"));
     }
 
     function startSession() {
@@ -404,9 +238,7 @@
             { act: names.A, role: '复述', t: 120, s: "请复述对方的话", l: "确认是否理解" },
             { act: 'BOTH', role: '交流', t: 60, s: "总结", l: "总结" }
         ];
-        phaseIdx = 0;
-        showScreen('screen-interim');
-        setupInterim();
+        phaseIdx = 0; showScreen('screen-interim'); setupInterim();
     }
 
     function setupInterim() {
@@ -424,8 +256,7 @@
 
     function resumeFlow() {
         if(phases[phaseIdx].swap) { phaseIdx++; resumeFlow(); return; }
-        showScreen('screen-timer');
-        audioChunks = [];
+        showScreen('screen-timer'); audioChunks = [];
         if(mediaRecorder.state==='inactive') mediaRecorder.start();
         runTimer();
     }
@@ -434,10 +265,8 @@
         const p = phases[phaseIdx];
         const c = p.act === names.A ? COLORS.A : (p.act === names.B ? COLORS.B : COLORS.Neutral);
         document.documentElement.style.setProperty('--primary', c);
-        
         document.getElementById('round-badge').innerText = `ROUND ${phaseIdx<3?1:2} · ${p.role}`;
-        document.getElementById('name-top').innerText = names.A;
-        document.getElementById('name-bottom').innerText = names.B;
+        document.getElementById('name-top').innerText = names.A; document.getElementById('name-bottom').innerText = names.B;
         
         const top = document.getElementById('card-top'), bot = document.getElementById('card-bottom');
         top.className = "role-card"; bot.className = "role-card";
@@ -448,8 +277,7 @@
         document.getElementById('instr-top').innerText = (p.act===names.A||p.act==='BOTH') ? p.s : p.l;
         document.getElementById('instr-bottom').innerText = (p.act===names.B||p.act==='BOTH') ? p.s : p.l;
 
-        let t = p.t;
-        updateRing(t, p.t);
+        let t = p.t; updateRing(t, p.t);
         clearInterval(timerInterval);
         timerInterval = setInterval(()=>{ t--; updateRing(t, p.t); if(t<=0) finishPhase(); }, 1000);
     }
@@ -461,27 +289,22 @@
 
     function finishPhase() { clearInterval(timerInterval); if(mediaRecorder.state==='recording') mediaRecorder.stop(); else proceedNext(); }
     function proceedNext() {
-        phaseIdx++;
-        if(phaseIdx >= phases.length) showScreen('screen-paywall');
-        else {
-            if(phases[phaseIdx].swap) { showScreen('screen-interim'); setupInterim(); }
-            else { audioChunks=[]; mediaRecorder.start(); runTimer(); }
-        }
+        phaseIdx++; if(phaseIdx >= phases.length) showScreen('screen-paywall');
+        else { if(phases[phaseIdx].swap) { showScreen('screen-interim'); setupInterim(); } else { audioChunks=[]; mediaRecorder.start(); runTimer(); } }
     }
     function skipPhase() { finishPhase(); }
 
-    // === 💡 深度分析 ===
+    // === 4. API 分析与保存 (修复核心) ===
     async function startBatchProcessing() {
         const apiKey = localStorage.getItem('sf_api_key');
         if(!apiKey) { alert("请点击左上角设置 API Key"); return; }
         
         document.getElementById('modal-loading').style.display = 'flex';
-        document.getElementById('loading-txt').innerText = "转写录音中...";
+        document.getElementById('loading-txt').innerText = "音频上传中...";
 
         try {
-            // 1. 转写
             const segments = await Promise.all(sessionSegments.map(async s => {
-                if(s.blob.size < 500) return {...s, text:"(录音过短)"};
+                if(s.blob.size < 200) return {...s, text:"(录音过短)"};
                 const formData = new FormData();
                 formData.append('file', s.blob, 'audio.webm');
                 formData.append('model', 'FunAudioLLM/SenseVoiceSmall');
@@ -490,47 +313,17 @@
                 return {...s, text: d.text || "(静默)"};
             }));
 
-            // 2. 深度分析
-            document.getElementById('loading-txt').innerText = "心理分析中...";
-            
-            const conversation = segments.map(s => `${s.speaker} (${s.role}): ${s.text}`).join('\n');
-            const prompt = `你是一位拥有20年经验的家庭治疗师，精通“情绪聚焦疗法(EFT)”和“非暴力沟通(NVC)”。
-请阅读以下伴侣在“3-2-1 倾听练习”中的对话逐字稿，生成一份深度心理分析报告。
-请返回严格的 JSON 格式：{"title": "一个简短温暖的标题(如：一次关于被看见的尝试)", "insight": "HTML字符串"}
-
-【Insight 字段的 HTML 内容要求】：
-1. 必须使用 <h4> 作为小标题，<ul><li> 列表展示要点。
-2. 语气温暖、抱持、中立，不要评判，要像一位睿智的长者。
-3. 重点包含以下模块：
-
-<h4>🌡️ 情感温度计</h4>
-<ul>
-    <li><strong>情绪底色</strong>：用一个词形容（如：焦虑依恋、防御性回避、安全连接）。</li>
-    <li><strong>倾听质量</strong>：评分(1-10)。评价复述者(B)是否真的听到了A的感受，还是只听到了指责？</li>
-</ul>
-
-<h4>🔍 深度心理察觉 (EFT视角)</h4>
-<ul>
-    <li><strong>表层情绪</strong>：(例如：愤怒、指责)</li>
-    <li><strong>深层渴望</strong>：分析这些情绪背后未被满足的依恋需求（例如：渴望被重视、害怕被抛弃、需要确认自己是有价值的）。请务必挖掘出“愤怒背后的脆弱”。</li>
-</ul>
-
-<h4>💬 沟通模式卡点</h4>
-<p>指出对话中出现的防御机制（如：辩解、反击、沉默）。例如：“当A表达痛苦时，B急于解释原因，这阻断了情感流动。”</p>
-
-<h4>💡 咨询师建议 (NVC重塑)</h4>
-<p>请选取对话中冲突最大的一句话，运用非暴力沟通(观察+感受+需要+请求)进行重写示范。</p>
-<p><strong>原话：</strong>“...”</p>
-<p><strong>试着这样说：</strong>“...”</p>
-
-【对话逐字稿】：
-${conversation}`;
+            document.getElementById('loading-txt').innerText = "AI 深度分析...";
+            const conversation = segments.map(s => `${s.speaker}: ${s.text}`).join('\n');
+            const prompt = `你是一位精通EFT和NVC的资深家庭治疗师。请根据对话逐字稿生成深度心理分析。
+返回JSON: {"title":"简短标题", "insight":"HTML内容"}
+HTML要求：用<h4>做小标题，用<ul><li>列点。分析情绪底色、依恋需求、防御机制，并给出NVC话术重塑建议。
+对话：\n${conversation}`;
 
             const res2 = await fetch("https://api.siliconflow.cn/v1/chat/completions", {
                 method:"POST", headers:{"Authorization":`Bearer ${apiKey}`,"Content-Type":"application/json"},
                 body:JSON.stringify({model:"deepseek-ai/DeepSeek-V3", messages:[{role:"user",content:prompt}]})
             });
-            
             const d2 = await res2.json();
             let content = d2.choices[0].message.content.trim();
             if (content.startsWith('```json')) content = content.replace(/^```json/, '').replace(/```$/, '');
@@ -538,21 +331,27 @@ ${conversation}`;
             
             saveDB(ai.title, segments, ai.insight);
         } catch(e) { 
-            console.error(e);
-            alert("分析遇到问题，将仅保存录音。\n可能原因：API Key 余额不足或网络超时。"); 
-            saveOnly(); 
-        } 
-        finally { document.getElementById('modal-loading').style.display = 'none'; }
+            console.error(e); alert("AI 连接失败，将仅保存录音。"); saveOnly(); 
+        } finally { document.getElementById('modal-loading').style.display = 'none'; }
     }
 
     function saveOnly() { saveDB("未分析对话", sessionSegments.map(s=>({...s,text:"(未转写)"})), "未分析"); }
+    
     function saveDB(title, segs, insight) {
-        const rec = { id:Date.now(), date:new Date().toLocaleDateString(), timestamp:Date.now(), title, segments:segs, insight };
+        // 核心修复：使用统一的日期格式
+        const rec = { id:Date.now(), date: getTodayStr(), timestamp:Date.now(), title, segments:segs, insight };
         const tx = db.transaction(['sessions'], 'readwrite');
-        tx.objectStore('sessions').add(rec);
-        tx.oncomplete = () => loadDetail(rec);
+        const req = tx.objectStore('sessions').add(rec);
+        
+        req.onsuccess = () => {
+            // 保存成功后，强制重置筛选器，确保能看到新记录
+            resetFilter(); 
+            loadDetail(rec);
+        };
+        req.onerror = (e) => { alert("保存失败: " + e.target.error); };
     }
 
+    // === 5. 详情与列表 ===
     let currentAudio = null;
     function loadDetail(r) {
         document.getElementById('d-date').innerText = r.date;
@@ -562,27 +361,25 @@ ${conversation}`;
             const fullBlob = new Blob(r.segments.map(s=>s.blob), {type:supportedMime});
             if(fullBlob.size > 100) document.getElementById('d-full-audio').src = URL.createObjectURL(fullBlob);
         } catch(e){}
+        
         document.getElementById('d-transcript-box').innerHTML = r.segments.map((s,i) => `
             <div class="chat-bubble ${s.speaker===names.A?'bubble-left':'bubble-right'}">
-                <span class="bubble-tag" style="color:${s.speaker===names.A?'var(--color-a)':'var(--color-b)'}">${s.speaker} · ${s.role}</span>
+                <span class="bubble-tag" style="color:${s.speaker===names.A?'var(--color-a)':'var(--color-b)'}">${s.speaker}</span>
                 ${s.text}
-                <div class="audio-btn" onclick="playSeg(this,${r.id},${i})">▶ 播放片段</div>
+                <div class="audio-btn" onclick="playSeg(this,${r.id},${i})" style="font-size:12px;color:#999;margin-top:5px;cursor:pointer;">▶ 播放此段</div>
             </div>
         `).join('');
         showScreen('screen-detail');
     }
+    
     window.playSeg = (btn, id, idx) => {
         document.getElementById('d-full-audio').pause();
         if(currentAudio) currentAudio.pause();
-        document.querySelectorAll('.audio-btn').forEach(b=>b.classList.remove('playing'));
         const tx = db.transaction(['sessions'], 'readonly');
         tx.objectStore('sessions').get(id).onsuccess = e => {
             const blob = e.target.result.segments[idx].blob;
-            if(blob.size<100) {alert("无音频");return;}
             currentAudio = new Audio(URL.createObjectURL(blob));
             currentAudio.play();
-            btn.classList.add('playing');
-            currentAudio.onended = () => btn.classList.remove('playing');
         };
     }
 
@@ -593,27 +390,37 @@ ${conversation}`;
             let list = e.target.result.sort((a,b)=>b.timestamp - a.timestamp);
             renderCalendar(list);
             if(filterDate) list = list.filter(i => i.date === filterDate);
+            
             document.getElementById('history-list-container').innerHTML = list.map(i => `
                 <div class="history-item" onclick="fetchAndShow(${i.id})">
-                    <div class="h-icon ${i.title.includes('未分析')?'':'done'}">${i.title.includes('未分析')?'🎙':'✨'}</div>
-                    <div style="flex:1;"><div style="font-weight:600; font-size:15px; margin-bottom:4px;">${i.title}</div><div style="font-size:12px; color:#999;">${i.date}</div></div>
+                    <div class="h-icon" style="background:${i.title.includes('未分析')?'#eee':'var(--bg-a)'}; color:${i.title.includes('未分析')?'#999':'var(--color-a)'}">${i.title.includes('未分析')?'🎙':'✨'}</div>
+                    <div style="flex:1;">
+                        <div style="font-weight:600; margin-bottom:4px;">${i.title}</div>
+                        <div style="font-size:12px; color:#999;">${i.date}</div>
+                    </div>
                 </div>
             `).join('') || `<div style="text-align:center;color:#ccc;margin-top:20px;">暂无记录</div>`;
             document.getElementById('reset-filter-btn').style.display = filterDate ? 'block' : 'none';
         };
     }
+
     function renderCalendar(list) {
         const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
         const today = new Date(); const days = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
-        const dataSet = new Set(list.map(i=>i.date));
+        const dataSet = new Set(list.map(i=>i.date)); // 现在这里的格式和 getTodayStr 一致
+        
         for(let d=1; d<=days; d++) {
-            const dateStr = new Date(today.getFullYear(), today.getMonth(), d).toLocaleDateString();
+            // 使用完全一致的格式化逻辑
+            const dateObj = new Date(today.getFullYear(), today.getMonth(), d);
+            const dateStr = `${dateObj.getFullYear()}/${String(dateObj.getMonth()+1).padStart(2,'0')}/${String(dateObj.getDate()).padStart(2,'0')}`;
+            
             const el = document.createElement('div'); el.className = 'cal-day ' + (dataSet.has(dateStr)?'has-data':'');
             if(filterDate === dateStr) el.classList.add('active');
             el.innerText = d; el.onclick = () => { filterDate = dateStr; loadHistoryList(); };
             grid.appendChild(el);
         }
     }
+    
     function toggleCalendar() { document.getElementById('cal-grid').classList.toggle('show'); }
     function resetFilter() { filterDate = null; loadHistoryList(); }
     window.fetchAndShow = id => { const tx = db.transaction(['sessions'], 'readonly'); tx.objectStore('sessions').get(id).onsuccess = e => loadDetail(e.target.result); }
@@ -623,16 +430,13 @@ ${conversation}`;
         document.querySelectorAll('.tab-item').forEach(i=>i.classList.remove('active'));
         document.getElementById('tab-'+t).classList.add('active');
         document.getElementById('btn-'+t).classList.add('active');
-        const hideTabs = ['screen-timer','screen-interim','screen-paywall'];
-        document.getElementById('tab-bar').style.display = hideTabs.includes(id) ? 'none' : 'flex';
-        // 修复：如果从 help 回来，确保 tab-bar 显示
-        if(t==='home') document.getElementById('tab-bar').style.display='flex';
+        const hideTabs = ['screen-timer','screen-interim','screen-paywall', 'screen-help'];
+        document.getElementById('tab-bar').style.display = hideTabs.includes('tab-'+t) ? 'none' : 'flex';
         if(t==='history') loadHistoryList();
     }
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        // 使用说明页隐藏 tabbar
         const hideTabs = ['screen-timer','screen-interim','screen-paywall', 'screen-help'];
         document.getElementById('tab-bar').style.display = hideTabs.includes(id) ? 'none' : 'flex';
     }
