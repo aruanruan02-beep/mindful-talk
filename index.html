@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mindful Talk (V17 Insight)</title>
+    <title>Mindful Talk (V18.0)</title>
     <style>
         :root {
             /* 莫兰迪高级色系 */
@@ -14,12 +14,14 @@
             --bg-card: #FFFFFF;
             --text-main: #333333;
             --text-sub: #888888;
-            --shadow-card: 0 10px 30px rgba(0,0,0,0.04);
+            --shadow-card: 0 8px 24px rgba(0,0,0,0.05);
             
             /* 角色色 */
             --color-a: #8FA87A; --bg-a: #F1F6EE;
             --color-b: #E08C66; --bg-b: #FFF5F0;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -44,10 +46,25 @@
         .screen.active { display: flex; }
         .screen::-webkit-scrollbar { display: none; }
 
-        /* 首页 */
+        /* 首页优化 */
         .home-header { margin-top: 40px; text-align: center; }
         .home-header h1 { font-size: 28px; font-weight: 600; color: var(--primary-dark); margin: 0; }
-        .start-btn-wrapper { position: relative; width: 160px; height: 160px; margin: 30px auto; }
+        
+        /* 核心修复：输入框容器与宽度 */
+        .input-group { 
+            background: var(--bg-card); padding: 20px; border-radius: 20px; 
+            box-shadow: var(--shadow-card); width: 100%; margin-top: 20px;
+        }
+        /* 强制 box-sizing 且 width 100% */
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 14px; margin: 6px 0; 
+            border: 1px solid transparent; background: #F9F9F9; 
+            border-radius: 12px; font-size: 16px; text-align: center; outline: none;
+            color: var(--text-main); box-sizing: border-box; /* 关键 */
+        }
+        input[type="text"]:focus { background: #fff; box-shadow: 0 0 0 2px var(--primary); }
+
+        .start-btn-wrapper { position: relative; width: 150px; height: 150px; margin: 30px auto 10px auto; }
         .big-btn {
             width: 100%; height: 100%; border-radius: 50%; border: none;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -63,12 +80,12 @@
             animation: pulse 2.5s infinite; z-index: 1; pointer-events: none;
         }
 
-        .input-group { background: var(--bg-card); padding: 20px; border-radius: 20px; box-shadow: var(--shadow-card); }
-        input[type="text"] {
-            width: 100%; padding: 12px; margin: 5px 0; border: 1px solid transparent; 
-            background: #F9F9F9; border-radius: 12px; font-size: 16px; text-align: center; outline: none;
+        /* 使用说明链接 */
+        .help-link { 
+            text-align: center; margin-top: 15px; font-size: 13px; 
+            color: var(--text-sub); text-decoration: underline; cursor: pointer; 
+            opacity: 0.8;
         }
-        input[type="text"]:focus { background: #fff; box-shadow: 0 0 0 2px var(--primary); }
 
         /* 计时页 */
         .timer-wrapper { position: relative; width: 220px; height: 220px; margin: 20px auto; }
@@ -90,18 +107,22 @@
         .detail-card { background: var(--bg-card); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow-card); }
         .section-title { font-size: 14px; font-weight: 700; color: var(--text-sub); margin-bottom: 15px; display: block; border-left: 3px solid var(--primary); padding-left: 10px; }
         
-        /* 💡 增强的 AI 洞察样式 */
         .insight-content { font-size: 15px; line-height: 1.8; color: #444; }
         .insight-content h4 { margin: 15px 0 8px 0; color: var(--primary-dark); font-size: 16px; background: #f4f8f4; padding: 8px; border-radius: 8px; }
         .insight-content strong { color: #333; font-weight: 600; }
         .insight-content ul { padding-left: 20px; margin: 5px 0; }
         .insight-content li { margin-bottom: 8px; }
-        .insight-content p { margin-bottom: 10px; }
 
         .chat-bubble { padding: 14px 18px; border-radius: 18px; font-size: 15px; line-height: 1.6; max-width: 85%; position: relative; margin-bottom: 15px; }
         .bubble-left { background: var(--bg-a); border-top-left-radius: 4px; margin-right: auto; }
         .bubble-right { background: var(--bg-b); border-top-right-radius: 4px; margin-left: auto; }
         .bubble-tag { font-size: 11px; font-weight: bold; opacity: 0.7; margin-bottom: 4px; display: block; text-transform: uppercase; }
+
+        /* 使用说明页样式 */
+        .help-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow-card); }
+        .help-card h3 { color: var(--primary-dark); margin: 0 0 10px 0; font-size: 16px; }
+        .help-card p { font-size: 14px; color: #555; line-height: 1.6; margin: 0; }
+        .step-num { display: inline-block; width: 20px; height: 20px; background: var(--accent); color: white; border-radius: 50%; text-align: center; line-height: 20px; font-size: 12px; margin-right: 5px; }
 
         /* 底部导航 */
         #tab-bar {
@@ -113,7 +134,7 @@
         .tab-item { flex: 1; text-align: center; color: #BBB; font-size: 24px; transition: 0.3s; }
         .tab-item.active { color: var(--primary-dark); transform: scale(1.1); }
 
-        /* 通用 */
+        /* 通用按钮 */
         .btn-full {
             width: 100%; padding: 16px; border-radius: 50px; border: none;
             background: var(--primary); color: white; font-size: 16px; font-weight: 600;
@@ -122,13 +143,19 @@
         .btn-full:active { transform: scale(0.98); }
         .settings-icon { position: absolute; top: 20px; left: 20px; font-size: 24px; color: #ccc; cursor: pointer; z-index: 100; }
 
-        /* 弹窗 */
+        /* 弹窗优化 */
         .modal-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
             z-index: 2000; display: none; align-items: center; justify-content: center;
         }
-        .modal-box { background: white; width: 80%; max-width: 300px; padding: 30px 20px; border-radius: 24px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        /* 修复：使用 box-sizing 和 max-width 防止溢出 */
+        .modal-box { 
+            background: white; width: 85%; max-width: 320px; 
+            padding: 25px; border-radius: 24px; text-align: center; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            box-sizing: border-box; 
+        }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.9); opacity: 0; } }
@@ -163,12 +190,46 @@
             <div class="pulse-ring"></div>
             <button class="big-btn" onclick="checkPermissionAndStart()">
                 <span style="font-size: 32px; margin-bottom: 5px;">🎙</span>
-                开始沟通
+                开始
             </button>
         </div>
+        
+        <div class="help-link" onclick="showScreen('screen-help')">👉 如何使用本应用？</div>
+
         <div class="input-group">
-            <input type="text" id="nameA" value="Alex" placeholder="Name A (绿)">
-            <input type="text" id="nameB" value="Jamie" placeholder="Name B (橙)">
+            <input type="text" id="nameA" placeholder="您的名字 (A / 讲述者)">
+            <input type="text" id="nameB" placeholder="伴侣名字 (B / 倾听者)">
+        </div>
+    </div>
+
+    <div id="screen-help" class="screen" style="background: #F7F8FA;">
+        <div style="margin-bottom: 20px; display: flex; align-items: center;">
+            <button onclick="showScreen('tab-home')" style="border:none; background:none; font-size:24px; margin-right:10px;">←</button>
+            <h2 style="margin:0; font-size: 20px; color: var(--text-main);">使用指南</h2>
+        </div>
+
+        <div class="help-card">
+            <h3>⏳ 3-2-1 沟通法则</h3>
+            <p><span class="step-num">1</span><strong>A 讲述 (3分钟)</strong>：A 专注表达感受，使用“我感到...”句式。B 保持沉默，不打断。</p>
+            <div style="height:10px;"></div>
+            <p><span class="step-num">2</span><strong>B 复述 (2分钟)</strong>：B 复述听到的内容，确认理解是否准确，不反驳，不辩解。</p>
+            <div style="height:10px;"></div>
+            <p><span class="step-num">3</span><strong>自由交流 (1分钟)</strong>：双方核对感受，然后交换角色。</p>
+        </div>
+
+        <div class="help-card">
+            <h3>🤖 AI 深度洞察</h3>
+            <p>对话结束后，AI 将作为您的“私人咨询师”，基于录音分析：</p>
+            <ul style="margin: 10px 0; padding-left: 20px; color: #555; font-size: 13px;">
+                <li>识别表层情绪背后的深层需求</li>
+                <li>评估倾听与复述的质量</li>
+                <li>提供非暴力沟通(NVC)话术建议</li>
+            </ul>
+        </div>
+
+        <div class="help-card">
+            <h3>🔒 隐私安全</h3>
+            <p>所有录音和 API Key 均存储在您的本地手机浏览器中。API 调用仅在分析时进行，不会用于训练模型。</p>
         </div>
     </div>
 
@@ -254,20 +315,21 @@
     </div>
 
     <div id="modal-loading" class="modal-overlay"><div class="modal-box"><div style="font-size:30px;animation:pulse 1s infinite;">🧠</div><h3 id="loading-txt">AI 深度分析中...</h3></div></div>
+    
     <div id="modal-settings" class="modal-overlay">
         <div class="modal-box">
             <h3>API 设置</h3>
             <p style="font-size:12px; color:#999;">SiliconFlow / OpenAI</p>
-            <input type="password" id="apiKeyInput" placeholder="sk-..." style="width:100%; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center;">
-            <button class="btn-full" onclick="saveSettings()" style="margin-top:15px;">保存</button>
-            <button onclick="document.getElementById('modal-settings').style.display='none'" style="border:none; background:none; color:#999; margin-top:15px;">关闭</button>
+            <input type="password" id="apiKeyInput" placeholder="sk-..." style="margin-bottom: 15px;">
+            <button class="btn-full" onclick="saveSettings()" style="margin-top:5px;">保存</button>
+            <button onclick="document.getElementById('modal-settings').style.display='none'" style="border:none; background:none; color:#999; margin-top:10px;">关闭</button>
         </div>
     </div>
 
 </div>
 
 <script>
-    const DB_NAME = 'MindfulTalk_V17';
+    const DB_NAME = 'MindfulTalk_V18';
     let db;
     function initDB() {
         const r = indexedDB.open(DB_NAME, 1);
@@ -279,7 +341,7 @@
             loadHistoryList();
         };
     }
-    // 更新 Mock 数据，展示富文本效果
+    // Mock Data with Rich Text
     function seedMockData() {
         const mockBlob = new Blob([""], { type: 'audio/webm' });
         const today = new Date().toLocaleDateString();
@@ -294,11 +356,9 @@
                             <li><strong>需要</strong>: 渴望“支持”和“家庭共担”。</li>
                           </ul>
                           <h4>2. 情绪聚焦疗法 (EFT) 视角</h4>
-                          <p>Jamie 的防御性回答（“我也很忙”）掩盖了深层的<strong>不安全感</strong>——担心自己做得不够好而被指责。Alex 的抱怨实则是<strong>依恋呼唤</strong>。</p>
+                          <p>Jamie 的防御性回答（“我也很忙”）掩盖了深层的<strong>不安全感</strong>——担心自己做得不够好而被指责。</p>
                           <h4>3. 倾听质量</h4>
-                          <p>Jamie 在复述时加入了辩解，没有完全接纳 Alex 的情绪。建议下次只复述，不解释。</p>
-                          <h4>4. 建议</h4>
-                          <p>尝试用<strong>“我感到...因为我需要...”</strong>句式，代替“你总是...”。</p>`,
+                          <p>Jamie 在复述时加入了辩解，没有完全接纳 Alex 的情绪。建议下次只复述，不解释。</p>`,
                 segments: [{speaker:"Alex", role:"讲述", text:"我觉得这周很累，地都没人拖。", blob:mockBlob}, {speaker:"Jamie", role:"复述", text:"你觉得累是因为没人拖地？但我这周也很忙啊。", blob:mockBlob}] 
             }
         ];
@@ -308,14 +368,18 @@
     window.onload = initDB;
 
     const COLORS = { A: '#8FA87A', B: '#E08C66', Neutral: '#888' };
-    let names = { A: "Alex", B: "Jamie" };
+    let names = { A: "Alex", B: "Jamie" }; // 内部默认变量，但界面上显示为空
     let phases = [], phaseIdx = 0, timerInterval;
     let mediaRecorder, audioChunks = [], sessionSegments = [];
     let supportedMime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
 
     function checkPermissionAndStart() {
-        names.A = document.getElementById('nameA').value || "Alex";
-        names.B = document.getElementById('nameB').value || "Jamie";
+        // 获取用户输入，如果为空则使用默认 A/B，但不持久化到输入框显示
+        const inputA = document.getElementById('nameA').value.trim();
+        const inputB = document.getElementById('nameB').value.trim();
+        names.A = inputA || "A";
+        names.B = inputB || "B";
+
         navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
             mediaRecorder = new MediaRecorder(stream, { mimeType: supportedMime });
             mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
@@ -406,7 +470,7 @@
     }
     function skipPhase() { finishPhase(); }
 
-    // === 💡 核心：深度分析 API 调用 ===
+    // === 💡 深度分析 ===
     async function startBatchProcessing() {
         const apiKey = localStorage.getItem('sf_api_key');
         if(!apiKey) { alert("请点击左上角设置 API Key"); return; }
@@ -429,7 +493,6 @@
             // 2. 深度分析
             document.getElementById('loading-txt').innerText = "心理分析中...";
             
-            // 🧠 超级提示词
             const conversation = segments.map(s => `${s.speaker} (${s.role}): ${s.text}`).join('\n');
             const prompt = `你是一位拥有20年经验的家庭治疗师，精通“情绪聚焦疗法(EFT)”和“非暴力沟通(NVC)”。
 请阅读以下伴侣在“3-2-1 倾听练习”中的对话逐字稿，生成一份深度心理分析报告。
@@ -469,7 +532,6 @@ ${conversation}`;
             });
             
             const d2 = await res2.json();
-            // 清理 JSON 格式
             let content = d2.choices[0].message.content.trim();
             if (content.startsWith('```json')) content = content.replace(/^```json/, '').replace(/```$/, '');
             const ai = JSON.parse(content);
@@ -494,7 +556,6 @@ ${conversation}`;
     let currentAudio = null;
     function loadDetail(r) {
         document.getElementById('d-date').innerText = r.date;
-        // 渲染 HTML 富文本
         document.getElementById('d-insight').innerHTML = r.insight;
         
         try {
@@ -563,13 +624,16 @@ ${conversation}`;
         document.getElementById('tab-'+t).classList.add('active');
         document.getElementById('btn-'+t).classList.add('active');
         const hideTabs = ['screen-timer','screen-interim','screen-paywall'];
-        document.getElementById('tab-bar').style.display = hideTabs.includes('tab-'+t) ? 'none' : 'flex';
+        document.getElementById('tab-bar').style.display = hideTabs.includes(id) ? 'none' : 'flex';
+        // 修复：如果从 help 回来，确保 tab-bar 显示
+        if(t==='home') document.getElementById('tab-bar').style.display='flex';
         if(t==='history') loadHistoryList();
     }
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        const hideTabs = ['screen-timer','screen-interim','screen-paywall'];
+        // 使用说明页隐藏 tabbar
+        const hideTabs = ['screen-timer','screen-interim','screen-paywall', 'screen-help'];
         document.getElementById('tab-bar').style.display = hideTabs.includes(id) ? 'none' : 'flex';
     }
     function openSettings() { document.getElementById('modal-settings').style.display='flex'; document.getElementById('apiKeyInput').value=localStorage.getItem('sf_api_key')||''; }
