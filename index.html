@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>伴侣正念沟通</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app-container">
+
+    <div id="tab-home" class="screen active" style="justify-content: center;">
+        <div style="position:absolute; top:20px; right:20px; font-size:20px; color:#ddd; cursor:pointer; padding:10px;" onclick="openSettings()">⚙️</div>
+        
+        <div class="home-header">
+            <div class="home-title">伴侣正念沟通</div>
+            <div class="home-sub">Mindful Connection</div>
+        </div>
+
+        <div class="start-circle" onclick="checkPermissionAndStart()">
+            <div class="start-icon">🎙</div>
+            <div style="font-weight:500; letter-spacing:1px; font-size: 13px;">START</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="nameA" placeholder="讲述者 (A)">
+            <input type="text" id="nameB" placeholder="倾听者 (B)">
+        </div>
+        
+        <div class="help-btn" onclick="showScreen('screen-help')">📖 使用指南</div>
+    </div>
+
+    <div id="screen-help" class="screen">
+        <div class="detail-header">
+            <button class="back-btn" onclick="showScreen('tab-home')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="detail-title" style="text-align: center; padding-right: 44px;">使用指南</div>
+        </div>
+        
+        <div class="help-block">
+            <h3>⏳ 3-2-1 规则</h3>
+            <p><strong>3分钟 讲述</strong>：A 表达感受，B 仅倾听。</p>
+            <p><strong>2分钟 复述</strong>：B 复述听到的内容，确认理解。</p>
+            <p><strong>1分钟 交流</strong>：确认理解是否准确，分享此刻的感受。</p>
+        </div>
+        <div class="help-block">
+            <h3>🤖 AI 深度分析</h3>
+            <p>对话结束后，AI 将基于非暴力沟通理论，分析双方的情绪底色、依恋需求，并给出具体的互动建议。</p>
+        </div>
+    </div>
+
+    <div id="screen-timer" class="screen">
+        <div class="split-container" id="splitContainer">
+            <div class="pane active" id="pane-top">
+                <div class="pane-content">
+                    <div class="pane-label" id="label-top">SPEAKER</div>
+                    <div class="pane-name" id="name-top">Alex</div>
+                    <div class="pane-timer" id="timer-top">03:00</div>
+                    <div class="voice-wave">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                    <div class="pane-hint" id="instr-top">请专注表达感受...</div>
+                </div>
+            </div>
+            
+            <div class="pane inactive" id="pane-bottom">
+                <div class="pane-content">
+                    <div class="pane-label" id="label-bottom">LISTENER</div>
+                    <div class="pane-name" id="name-bottom">Jamie</div>
+                    <div class="pane-timer" id="timer-bottom">03:00</div>
+                    <div class="voice-wave">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                    <div class="pane-hint" id="instr-bottom">...</div>
+                </div>
+            </div>
+            
+            <div id="pane-full" class="pane-full" style="display:none;">
+                <div class="full-timer" id="timer-full">01:00</div>
+                <div class="full-hint" id="instr-full">现在是自由交流时间<br>核对理解，分享感受</div>
+            </div>
+        </div>
+        <div class="float-skip" onclick="skipPhase()">跳过当前阶段</div>
+    </div>
+
+    <div id="screen-interim" class="screen" style="justify-content:center; align-items:center; text-align:center;">
+        <h2 id="interim-title" style="font-weight: 300; color: var(--text-main);">交换</h2>
+        <p id="interim-desc" style="color:#888; margin-bottom:50px; font-weight: 300;">...</p>
+        <button onclick="resumeFlow()" class="interim-btn">继续</button>
+    </div>
+
+    <div id="screen-paywall" class="screen paywall-screen">
+        
+        <div class="paywall-header">
+            <h2>解锁完整分析报告</h2>
+            <p class="paywall-subtitle">解锁后即可查看以下深度分析内容</p>
+        </div>
+
+        <div class="value-list">
+            <div class="value-card">
+                <div class="value-icon-box" style="background:#E3F2FD; color:#42A5F5;">🧠</div>
+                <div class="value-content">
+                    <h3>深度心理分析</h3>
+                    <p>基于依恋理论，精准解读对话背后的情绪底色与深层需求。</p>
+                </div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon-box" style="background:#F3E5F5; color:#AB47BC;">📝</div>
+                <div class="value-content">
+                    <h3>智能对话回溯</h3>
+                    <p>自动整理逐字稿，按角色清晰区分，不错过任何细节。</p>
+                </div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon-box" style="background:#E8F5E9; color:#66BB6A;">🌱</div>
+                <div class="value-content">
+                    <h3>关系成长建议</h3>
+                    <p>针对本次沟通的痛点，提供具体的行动指南与话术建议。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-box">
+            <div class="benefit-banner">🎁 限时福利：首月免费体验</div>
+            
+            <div class="wechat-row" onclick="copyWeChat()">
+                <div class="wx-text-col">
+                    <span class="wx-label">添加微信获取激活码：</span>
+                    <span class="wx-code">Mindful_Dev</span>
+                </div>
+                <span class="copy-tag">复制</span>
+            </div>
+            
+            <div class="activation-form-stack">
+                <input type="text" id="activationCode" placeholder="输入激活码" class="activation-input-lg">
+                <button onclick="verifyAndUnlock()" class="unlock-btn-lg">立即解锁</button>
+            </div>
+        </div>
+        
+        <div onclick="saveOnly()" class="skip-link-text">暂不订阅，仅保存录音</div>
+    </div>
+
+    <div id="screen-detail" class="screen" style="background:#fff; z-index:50;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="switchTab('history')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div id="d-title" class="detail-title">分析报告</div>
+            <div id="d-date" class="detail-date"></div>
+        </div>
+
+        <div class="audio-card">
+            <div class="audio-label">
+                <div class="audio-dot"></div> 全程录音
+            </div>
+            <audio id="d-full-audio" controls></audio>
+        </div>
+
+        <div id="insight-container" class="insight-box">
+            <div class="section-title">
+                <span>💡</span> 深度洞察
+            </div>
+            <div id="d-insight"></div>
+        </div>
+
+        <div id="empty-analysis-box" class="empty-state-box" style="display:none;">
+            <div class="empty-icon">✨</div>
+            <p class="empty-text">该对话暂无 AI 分析记录<br>点击下方按钮生成报告</p>
+            <button class="btn-retry" onclick="retryAnalysis(currentRecordId)">
+                <span>⚡</span> 生成深度洞察
+            </button>
+        </div>
+
+        <div id="transcript-container" class="transcript-wrapper">
+            <div class="section-title">
+                <span>📝</span> 对话回溯
+            </div>
+            <div id="d-transcript-box" class="chat-container"></div>
+        </div>
+    </div>
+
+    <div id="tab-history" class="screen">
+        <h2 style="margin:20px 0; font-weight:400;">历史记录</h2>
+        <div class="calendar-widget">
+            <div class="cal-header">
+                <button class="cal-nav-btn" onclick="changeMonth(-1); event.stopPropagation();">‹</button>
+                <div onclick="toggleCalendar()" style="display:flex; align-items:center; gap:5px; padding: 5px 10px; border-radius: 8px; transition:0.2s;">
+                    <span id="cal-current-month" style="font-weight:500; font-size:15px; width:80px; text-align:center;">2025/12</span>
+                    <span id="cal-toggle-icon" style="font-size:10px; color:#aaa; transform: rotate(0deg); transition: 0.3s;">▼</span>
+                </div>
+                <button class="cal-nav-btn" onclick="changeMonth(1); event.stopPropagation();">›</button>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+            <div id="reset-filter" style="text-align:center; padding-top:15px; font-size:12px; color:var(--primary); display:none; cursor:pointer;" onclick="resetFilter()">显示全部记录</div>
+        </div>
+        <div id="history-list-container"></div>
+    </div>
+
+    <div id="tab-bar">
+        <div class="tab-item active" id="btn-home" onclick="switchTab('home')">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">首页</span>
+        </div>
+        <div class="tab-item" id="btn-history" onclick="switchTab('history')">
+            <span class="tab-icon">📅</span>
+            <span class="tab-label">历史</span>
+        </div>
+    </div>
+
+    <div id="modal-loading" class="modal-overlay">
+        <div class="modal-box loading-box">
+            <div class="loading-spinner"></div>
+            <div id="loading-step" class="loading-step">正在连接 AI 大脑...</div>
+            <div id="loading-sub" class="loading-sub">分析可能需要 30 秒，请耐心等待</div>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="modal-overlay">
+        <div class="modal-box">
+            <div class="settings-icon-wrapper">🔑</div>
+            <h3>配置 API Key</h3>
+            <p id="settings-hint" style="font-size:12px; color:#999; margin-bottom:15px;">Key 仅保存在本地浏览器</p>
+            <input type="password" id="apiKeyInput" placeholder="sk-..." autocomplete="off">
+            <div class="settings-btn-group">
+                <button class="btn-cancel" onclick="document.getElementById('modal-settings').style.display='none'">取消</button>
+                <button class="btn-save" onclick="saveSettings()">保存</button>
+            </div>
+            <button class="btn-clear" onclick="clearData()">🗑 清除所有数据</button>
+        </div>
+    </div>
+
+    <div id="modal-alert" class="modal-overlay" style="z-index: 10000;">
+        <div class="modal-box">
+            <div id="alert-icon" style="font-size: 40px; margin-bottom: 15px;">🎉</div>
+            <h3 id="alert-title">提示</h3>
+            <p id="alert-msg" style="color:#666; font-size:14px; margin-bottom:20px;">...</p>
+            <button onclick="closeAlert()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; font-size:15px; cursor:pointer;">知道了</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
