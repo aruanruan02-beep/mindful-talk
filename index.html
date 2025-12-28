@@ -3,184 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mindful Talk (V25 Final)</title>
-    <style>
-        :root {
-            /* 莫兰迪·大地色系 */
-            --bg-a: #F2F7F2;  /* 极浅灰绿 */
-            --text-a: #5D7A50;
-            --bg-b: #FFF9F5;  /* 极浅暖杏 */
-            --text-b: #C97C5D;
-            --primary: #7A9A6E;
-            --accent: #DFA656;
-            --text-main: #333;
-            --text-sub: #999;
-            --white: #ffffff;
-            --gray-bg: #F9F9F9;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif;
-            background-color: #222; margin: 0; 
-            display: flex; justify-content: center; height: 100vh; overflow: hidden;
-        }
-
-        #app-container {
-            width: 100%; max-width: 420px; height: 100%;
-            background: var(--white);
-            position: relative; display: flex; flex-direction: column;
-        }
-
-        /* 屏幕容器 */
-        .screen {
-            flex: 1; position: relative; overflow-y: auto; overflow-x: hidden;
-            display: none; flex-direction: column;
-            padding: 24px; padding-bottom: 90px;
-            animation: fadeIn 0.4s ease;
-        }
-        .screen.active { display: flex; }
-        .screen::-webkit-scrollbar { display: none; }
-
-        /* === 首页 === */
-        .home-header { margin-top: 60px; text-align: center; }
-        .home-title { font-size: 28px; color: var(--text-a); letter-spacing: 2px; font-weight: 300; }
-        .home-sub { font-size: 12px; color: var(--text-sub); letter-spacing: 4px; margin-top: 8px; text-transform: uppercase; }
-        
-        .start-circle {
-            width: 140px; height: 140px; border-radius: 50%;
-            background: var(--bg-a); border: 2px solid var(--text-a);
-            color: var(--text-a); display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            margin: 50px auto; cursor: pointer; transition: 0.2s;
-        }
-        .start-circle:active { transform: scale(0.95); background: var(--text-a); color: white; }
-        .start-icon { font-size: 32px; margin-bottom: 5px; }
-
-        .input-area { width: 100%; padding: 0 30px; }
-        input[type="text"] {
-            width: 100%; padding: 15px; margin-bottom: 15px; border: none;
-            background: #F5F5F5; border-radius: 12px; text-align: center;
-            font-size: 16px; color: #333; outline: none;
-        }
-        input::placeholder { color: #bbb; } /* 暗文样式 */
-        .help-btn { text-align: center; margin-top: 20px; color: var(--text-sub); font-size: 14px; text-decoration: underline; cursor: pointer; }
-
-        /* === 沉浸式分屏计时 === */
-        #screen-timer { padding: 0; background: #fff; }
-        .split-container { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
-        .pane {
-            width: 100%; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center;
-            transition: flex 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative; overflow: hidden;
-        }
-        #pane-top { background-color: var(--bg-a); color: var(--text-a); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        #pane-bottom { background-color: var(--bg-b); color: var(--text-b); }
-
-        .pane.active { flex: 2.5; } 
-        .pane.inactive { flex: 1; opacity: 0.6; filter: grayscale(0.2); } 
-        .pane.equal { flex: 1; opacity: 1; filter: none; } 
-
-        .pane-label { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.5; }
-        .pane-name { font-size: 36px; font-weight: 600; margin-bottom: 5px; }
-        .pane-role { font-size: 14px; opacity: 0.8; margin-bottom: 20px; }
-        .pane-timer { font-size: 64px; font-weight: 300; font-variant-numeric: tabular-nums; margin: 10px 0; letter-spacing: -2px; display: none; }
-        .pane.active .pane-timer, .pane.equal .pane-timer { display: block; animation: fadeIn 0.5s; }
-        .pane-hint { font-size: 14px; line-height: 1.5; max-width: 70%; text-align: center; margin-top: 20px; opacity: 0.8; }
-
-        .breath-icon { display: flex; gap: 4px; height: 20px; align-items: center; display: none; }
-        .pane.active .breath-icon { display: flex; }
-        .bar { width: 4px; background: currentColor; border-radius: 4px; animation: breath 1s infinite ease-in-out; }
-        @keyframes breath { 0%, 100% { height: 8px; opacity: 0.5; } 50% { height: 20px; opacity: 1; } }
-
-        .float-skip {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: white; padding: 10px 24px; border-radius: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1); color: #666; font-size: 14px;
-            z-index: 100; cursor: pointer; border: 1px solid #eee;
-        }
-
-        /* === 详情页 (优化版) === */
-        .detail-header { margin-bottom: 20px; display: flex; align-items: center; padding-right: 10px; }
-        /* 标题动态化，字号稍小以适应长标题 */
-        .detail-title { font-size: 18px; font-weight: 600; color: #333; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .detail-date { font-size: 12px; color: #999; margin-left: 10px; white-space: nowrap; }
-
-        .full-player { background: #f1f3f5; border-radius: 12px; padding: 12px 15px; margin-bottom: 20px; display: flex; align-items: center; }
-        .full-player-label { font-size: 12px; color: #666; margin-right: 10px; font-weight: bold; white-space: nowrap;}
-        
-        .insight-box { background: #fff; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); }
-        .insight-box h4 { margin: 15px 0 8px 0; color: var(--primary); font-size: 15px; }
-        .insight-box p { font-size: 14px; color: #555; line-height: 1.6; text-align: justify; margin-bottom: 10px;}
-        
-        /* 📦 对话回溯模块 (带底色) */
-        .transcript-wrapper {
-            background: #FAFAFA; border-radius: 16px; padding: 20px; /* 增加底色 */
-            border: 1px solid #f0f0f0;
-        }
-        .chat-container { display: flex; flex-direction: column; gap: 12px; }
-        .chat-bubble { 
-            padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; 
-            max-width: 88%; position: relative; color: #333;
-        }
-        .chat-row { display: flex; flex-direction: column; }
-        
-        .chat-row.left { align-items: flex-start; }
-        .chat-row.left .chat-bubble { background: var(--bg-a); border-top-left-radius: 4px; }
-        .chat-row.left .chat-name { color: var(--text-a); align-self: flex-start; margin-left: 5px; }
-        
-        .chat-row.right { align-items: flex-end; }
-        .chat-row.right .chat-bubble { background: var(--bg-b); border-top-right-radius: 4px; }
-        .chat-row.right .chat-name { color: var(--text-b); align-self: flex-end; margin-right: 5px; }
-
-        .chat-name { font-size: 10px; margin-bottom: 3px; font-weight: bold; opacity: 0.8; }
-
-        /* === 历史页 === */
-        .calendar-widget { background: #fff; border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-        .cal-header { display: flex; justify-content: space-between; cursor: pointer; padding-bottom: 5px; }
-        .cal-grid { display: none; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; }
-        .cal-grid.show { display: grid !important; }
-        .cal-day { height: 30px; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; position: relative; }
-        .cal-day.active { background: var(--text-a); color: white; }
-        .cal-day.has-data::after { content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; background: var(--text-b); border-radius: 50%; }
-        
-        .history-card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); cursor: pointer; }
-
-        /* === 使用说明页 === */
-        #screen-help { background: #fff; }
-        .help-block { margin-bottom: 30px; }
-        .help-block h3 { color: var(--text-a); border-bottom: 2px solid var(--bg-a); display: inline-block; padding-bottom: 5px; margin-bottom: 10px; font-size: 16px; }
-        .help-block p { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 8px; }
-
-        /* 底部导航 */
-        #tab-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background: rgba(255,255,255,0.95); border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-        .tab-item { flex: 1; text-align: center; color: #ccc; font-size: 24px; cursor: pointer; }
-        .tab-item.active { color: var(--text-a); }
-
-        /* 弹窗 */
-        .modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; display:none; justify-content:center; align-items:center; }
-        .modal-box { background:white; width:80%; border-radius:20px; padding:25px; text-align:center; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    <title>伴侣正念沟通</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="app-container">
 
     <div id="tab-home" class="screen active" style="justify-content: center;">
-        <div style="position:absolute; top:20px; right:20px; font-size:20px; color:#ccc; cursor:pointer;" onclick="openSettings()">⚙️</div>
+        <div style="position:absolute; top:20px; right:20px; font-size:20px; color:#ddd; cursor:pointer; padding:10px;" onclick="openSettings()">⚙️</div>
         
         <div class="home-header">
-            <div class="home-title">Mindful Talk</div>
-            <div class="home-sub">Relationship Growth</div>
+            <div class="home-title">伴侣正念沟通</div>
+            <div class="home-sub">Mindful Connection</div>
         </div>
 
         <div class="start-circle" onclick="checkPermissionAndStart()">
             <div class="start-icon">🎙</div>
-            <div style="font-weight:600; letter-spacing:1px;">开始沟通</div>
+            <div style="font-weight:500; letter-spacing:1px; font-size: 13px;">START</div>
         </div>
 
         <div class="input-area">
@@ -192,386 +32,216 @@
     </div>
 
     <div id="screen-help" class="screen">
-        <button onclick="showScreen('tab-home')" style="border:none;background:none;font-size:24px;align-self:flex-start;margin-bottom:20px;">←</button>
-        <h2 style="margin-bottom:20px;">使用指南</h2>
+        <div class="detail-header">
+            <button class="back-btn" onclick="showScreen('tab-home')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="detail-title" style="text-align: center; padding-right: 44px;">使用指南</div>
+        </div>
         
         <div class="help-block">
             <h3>⏳ 3-2-1 规则</h3>
             <p><strong>3分钟 讲述</strong>：A 表达感受，B 仅倾听。</p>
-            <p><strong>2分钟 复述</strong>：B 复述听到的内容，A 仅倾听。</p>
-            <p><strong>1分钟 交流</strong>：分享双方的感受，然后交换角色。</p>
+            <p><strong>2分钟 复述</strong>：B 复述听到的内容，确认理解。</p>
+            <p><strong>1分钟 交流</strong>：确认理解是否准确，分享此刻的感受。</p>
         </div>
-        
         <div class="help-block">
-            <h3>🤖 AI 咨询师</h3>
-            <p>录音结束后，AI 将分析对话里体现的情绪、需求，并给出双方的互动建议。</p>
-            <p style="font-size:12px; color:#999;">*需配置 API Key 并付费订阅(模拟)。</p>
+            <h3>🤖 AI 深度分析</h3>
+            <p>对话结束后，AI 将基于非暴力沟通理论，分析双方的情绪底色、依恋需求，并给出具体的互动建议。</p>
         </div>
     </div>
 
     <div id="screen-timer" class="screen">
-        <div class="split-container">
+        <div class="split-container" id="splitContainer">
             <div class="pane active" id="pane-top">
-                <div class="pane-label">SPEAKER</div>
-                <div class="pane-name" id="name-top">Alex</div>
-                <div class="pane-role" id="role-top">讲述者</div>
-                <div class="pane-timer" id="timer-top">03:00</div>
-                <div class="breath-icon">
-                    <div class="bar" style="animation-delay:0s"></div>
-                    <div class="bar" style="animation-delay:0.2s"></div>
-                    <div class="bar" style="animation-delay:0.4s"></div>
+                <div class="pane-content">
+                    <div class="pane-label" id="label-top">SPEAKER</div>
+                    <div class="pane-name" id="name-top">Alex</div>
+                    <div class="pane-timer" id="timer-top">03:00</div>
+                    <div class="voice-wave">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                    <div class="pane-hint" id="instr-top">请专注表达感受...</div>
                 </div>
-                <div class="pane-hint" id="instr-top">请专注表达感受...</div>
             </div>
             
             <div class="pane inactive" id="pane-bottom">
-                <div class="pane-timer" id="timer-bottom">03:00</div>
-                <div class="breath-icon">
-                    <div class="bar" style="animation-delay:0s"></div>
-                    <div class="bar" style="animation-delay:0.2s"></div>
-                    <div class="bar" style="animation-delay:0.4s"></div>
+                <div class="pane-content">
+                    <div class="pane-label" id="label-bottom">LISTENER</div>
+                    <div class="pane-name" id="name-bottom">Jamie</div>
+                    <div class="pane-timer" id="timer-bottom">03:00</div>
+                    <div class="voice-wave">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                    <div class="pane-hint" id="instr-bottom">...</div>
                 </div>
-                <div class="pane-hint" id="instr-bottom">...</div>
-                <div class="pane-role" id="role-bottom">倾听者</div>
-                <div class="pane-name" id="name-bottom">Jamie</div>
-                <div class="pane-label">LISTENER</div>
+            </div>
+            
+            <div id="pane-full" class="pane-full" style="display:none;">
+                <div class="full-timer" id="timer-full">01:00</div>
+                <div class="full-hint" id="instr-full">现在是自由交流时间<br>核对理解，分享感受</div>
             </div>
         </div>
-        
         <div class="float-skip" onclick="skipPhase()">跳过当前阶段</div>
     </div>
 
     <div id="screen-interim" class="screen" style="justify-content:center; align-items:center; text-align:center;">
-        <h2 id="interim-title">交换</h2>
-        <p id="interim-desc" style="color:#888; margin-bottom:30px;">...</p>
-        <button onclick="resumeFlow()" style="padding:15px 40px; background:var(--text-a); color:white; border:none; border-radius:30px; font-size:16px;">继续</button>
+        <h2 id="interim-title" style="font-weight: 300; color: var(--text-main);">交换</h2>
+        <p id="interim-desc" style="color:#888; margin-bottom:50px; font-weight: 300;">...</p>
+        <button onclick="resumeFlow()" class="interim-btn">继续</button>
     </div>
 
-    <div id="screen-paywall" class="screen" style="justify-content:center; align-items:center; text-align:center;">
-        <div style="font-size:50px; margin-bottom:20px;">✨</div>
-        <h2>对话完成</h2>
-        <p style="color:#888; margin-bottom:30px;">录音已保存。解锁深度分析报告。</p>
-        <button onclick="startBatchProcessing()" style="padding:15px 40px; background:linear-gradient(to right, #D4AF37, #FDC830); color:white; border:none; border-radius:30px; font-size:16px; font-weight:bold; box-shadow:0 5px 15px rgba(212,175,55,0.3);">解锁分析 (¥9.9)</button>
-        <div onclick="saveOnly()" style="margin-top:20px; text-decoration:underline; color:#999; font-size:13px;">仅保存录音</div>
+    <div id="screen-paywall" class="screen paywall-screen">
+        
+        <div class="paywall-header">
+            <h2>解锁完整分析报告</h2>
+            <p class="paywall-subtitle">解锁后即可查看以下深度分析内容</p>
+        </div>
+
+        <div class="value-list">
+            <div class="value-card">
+                <div class="value-icon-box" style="background:#E3F2FD; color:#42A5F5;">🧠</div>
+                <div class="value-content">
+                    <h3>深度心理分析</h3>
+                    <p>基于依恋理论，精准解读对话背后的情绪底色与深层需求。</p>
+                </div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon-box" style="background:#F3E5F5; color:#AB47BC;">📝</div>
+                <div class="value-content">
+                    <h3>智能对话回溯</h3>
+                    <p>自动整理逐字稿，按角色清晰区分，不错过任何细节。</p>
+                </div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon-box" style="background:#E8F5E9; color:#66BB6A;">🌱</div>
+                <div class="value-content">
+                    <h3>关系成长建议</h3>
+                    <p>针对本次沟通的痛点，提供具体的行动指南与话术建议。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-box">
+            <div class="benefit-banner">🎁 限时福利：首月免费体验</div>
+            
+            <div class="wechat-row" onclick="copyWeChat()">
+                <div class="wx-text-col">
+                    <span class="wx-label">添加微信获取激活码：</span>
+                    <span class="wx-code">Mindful_Dev</span>
+                </div>
+                <span class="copy-tag">复制</span>
+            </div>
+            
+            <div class="activation-form-stack">
+                <input type="text" id="activationCode" placeholder="输入激活码" class="activation-input-lg">
+                <button onclick="verifyAndUnlock()" class="unlock-btn-lg">立即解锁</button>
+            </div>
+        </div>
+        
+        <div onclick="saveOnly()" class="skip-link-text">暂不订阅，仅保存录音</div>
     </div>
 
-    <div id="screen-detail" class="screen" style="background:#F9F9F9; z-index:50;">
+    <div id="screen-detail" class="screen" style="background:#fff; z-index:50;">
         <div class="detail-header">
-            <button onclick="switchTab('history')" style="border:none;background:none;font-size:24px;">←</button>
+            <button class="back-btn" onclick="switchTab('history')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
             <div id="d-title" class="detail-title">分析报告</div>
             <div id="d-date" class="detail-date"></div>
         </div>
 
-        <div class="full-player">
-            <span class="full-player-label">🎧 全程录音</span>
-            <audio id="d-full-audio" controls style="width:100%; height:32px; outline:none;"></audio>
+        <div class="audio-card">
+            <div class="audio-label">
+                <div class="audio-dot"></div> 全程录音
+            </div>
+            <audio id="d-full-audio" controls></audio>
         </div>
 
-        <div class="insight-box">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:10px; color:var(--text-a);">💡 深度洞察</div>
+        <div id="insight-container" class="insight-box">
+            <div class="section-title">
+                <span>💡</span> 深度洞察
+            </div>
             <div id="d-insight"></div>
         </div>
 
-        <div class="transcript-wrapper">
-            <div style="font-weight:bold; font-size:14px; margin-bottom:15px; color:#666;">📝 对话回溯</div>
+        <div id="empty-analysis-box" class="empty-state-box" style="display:none;">
+            <div class="empty-icon">✨</div>
+            <p class="empty-text">该对话暂无 AI 分析记录<br>点击下方按钮生成报告</p>
+            <button class="btn-retry" onclick="retryAnalysis(currentRecordId)">
+                <span>⚡</span> 生成深度洞察
+            </button>
+        </div>
+
+        <div id="transcript-container" class="transcript-wrapper">
+            <div class="section-title">
+                <span>📝</span> 对话回溯
+            </div>
             <div id="d-transcript-box" class="chat-container"></div>
         </div>
     </div>
 
     <div id="tab-history" class="screen">
-        <h2 style="margin:20px 0;">历史记录</h2>
-        
+        <h2 style="margin:20px 0; font-weight:400;">历史记录</h2>
         <div class="calendar-widget">
-            <div class="cal-header" onclick="toggleCalendar()">
-                <span style="font-weight:600;">📅 按日期筛选</span>
-                <span style="color:#999;">▼</span>
+            <div class="cal-header">
+                <button class="cal-nav-btn" onclick="changeMonth(-1); event.stopPropagation();">‹</button>
+                <div onclick="toggleCalendar()" style="display:flex; align-items:center; gap:5px; padding: 5px 10px; border-radius: 8px; transition:0.2s;">
+                    <span id="cal-current-month" style="font-weight:500; font-size:15px; width:80px; text-align:center;">2025/12</span>
+                    <span id="cal-toggle-icon" style="font-size:10px; color:#aaa; transform: rotate(0deg); transition: 0.3s;">▼</span>
+                </div>
+                <button class="cal-nav-btn" onclick="changeMonth(1); event.stopPropagation();">›</button>
             </div>
             <div class="cal-grid" id="cal-grid"></div>
-            <div id="reset-filter" style="text-align:center; padding-top:10px; font-size:12px; color:var(--text-a); display:none;" onclick="resetFilter()">显示全部</div>
+            <div id="reset-filter" style="text-align:center; padding-top:15px; font-size:12px; color:var(--primary); display:none; cursor:pointer;" onclick="resetFilter()">显示全部记录</div>
         </div>
-
         <div id="history-list-container"></div>
     </div>
 
     <div id="tab-bar">
-        <div class="tab-item active" id="btn-home" onclick="switchTab('home')">🏠</div>
-        <div class="tab-item" id="btn-history" onclick="switchTab('history')">📅</div>
+        <div class="tab-item active" id="btn-home" onclick="switchTab('home')">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">首页</span>
+        </div>
+        <div class="tab-item" id="btn-history" onclick="switchTab('history')">
+            <span class="tab-icon">📅</span>
+            <span class="tab-label">历史</span>
+        </div>
     </div>
 
-    <div id="modal-loading" class="modal-overlay"><div class="modal-box"><h3>AI 分析中...</h3><p style="color:#999; font-size:12px;">正在重组对话上下文...</p></div></div>
-    <div id="modal-settings" class="modal-overlay"><div class="modal-box"><h3>API Key</h3><input type="password" id="apiKeyInput" placeholder="sk-..." style="border:1px solid #eee; margin-top:10px;"><button onclick="saveSettings()" style="padding:10px 30px; background:var(--text-a); color:white; border:none; border-radius:20px; margin-top:10px;">保存</button><div onclick="document.getElementById('modal-settings').style.display='none'" style="margin-top:15px; color:#999;">关闭</div></div></div>
+    <div id="modal-loading" class="modal-overlay">
+        <div class="modal-box loading-box">
+            <div class="loading-spinner"></div>
+            <div id="loading-step" class="loading-step">正在连接 AI 大脑...</div>
+            <div id="loading-sub" class="loading-sub">分析可能需要 30 秒，请耐心等待</div>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="modal-overlay">
+        <div class="modal-box">
+            <div class="settings-icon-wrapper">🔑</div>
+            <h3>配置 API Key</h3>
+            <p id="settings-hint" style="font-size:12px; color:#999; margin-bottom:15px;">Key 仅保存在本地浏览器</p>
+            <input type="password" id="apiKeyInput" placeholder="sk-..." autocomplete="off">
+            <div class="settings-btn-group">
+                <button class="btn-cancel" onclick="document.getElementById('modal-settings').style.display='none'">取消</button>
+                <button class="btn-save" onclick="saveSettings()">保存</button>
+            </div>
+            <button class="btn-clear" onclick="clearData()">🗑 清除所有数据</button>
+        </div>
+    </div>
+
+    <div id="modal-alert" class="modal-overlay" style="z-index: 10000;">
+        <div class="modal-box">
+            <div id="alert-icon" style="font-size: 40px; margin-bottom: 15px;">🎉</div>
+            <h3 id="alert-title">提示</h3>
+            <p id="alert-msg" style="color:#666; font-size:14px; margin-bottom:20px;">...</p>
+            <button onclick="closeAlert()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; font-size:15px; cursor:pointer;">知道了</button>
+        </div>
+    </div>
 
 </div>
 
-<script>
-    const DB_NAME = 'MindfulTalk_V25';
-    let db;
-    const getTodayStr = () => { const d=new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`; };
-    
-    function initDB() {
-        const r = indexedDB.open(DB_NAME, 1);
-        r.onupgradeneeded = e => { db = e.target.result; if(!db.objectStoreNames.contains('sessions')) db.createObjectStore('sessions', {keyPath: 'id'}); };
-        r.onsuccess = e => { 
-            db = e.target.result; 
-            const tx = db.transaction(['sessions'], 'readonly');
-            if(tx.objectStore('sessions').count().result === 0) seedMockData();
-            loadHistoryList();
-        };
-    }
-    function seedMockData() {
-        const mockBlob = new Blob([""], { type: 'audio/webm' });
-        const mocks = [{ 
-            id: 1001, date: getTodayStr(), timestamp: Date.now(), 
-            title: "关于周末安排的沟通", 
-            insight: "<h4>🌡️ 情绪底色</h4><p>温暖但略带焦虑。</p><h4>💡 双方贴士</h4><p>Alex: 表达需求很清晰。Jamie: 倾听很耐心。</p>",
-            segments: [
-                {speaker:"Alex", role:"讲述", text:"我觉得这周很累。", blob:mockBlob}, 
-                {speaker:"Jamie", role:"复述", text:"你觉得累？", blob:mockBlob}
-            ] 
-        }];
-        const tx = db.transaction(['sessions'], 'readwrite');
-        mocks.forEach(m => tx.objectStore('sessions').add(m));
-        tx.oncomplete = () => loadHistoryList();
-    }
-    window.onload = initDB;
-
-    let names = { A: "A", B: "B" };
-    let phases = [], phaseIdx = 0, timerInterval;
-    let mediaRecorder, audioChunks = [], sessionSegments = [];
-    let supportedMime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-
-    function checkPermissionAndStart() {
-        names.A = document.getElementById('nameA').value.trim() || "A";
-        names.B = document.getElementById('nameB').value.trim() || "B";
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-            mediaRecorder = new MediaRecorder(stream, { mimeType: supportedMime });
-            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(audioChunks, { type: supportedMime });
-                const p = phases[phaseIdx];
-                sessionSegments.push({ blob: blob, speaker: p.act==='BOTH'?'Both':p.act, role: p.role, text: "" });
-                proceedNext();
-            };
-            startSession();
-        }).catch(e => alert("需麦克风权限"));
-    }
-
-    function startSession() {
-        sessionSegments = [];
-        phases = [
-            { act: names.A, role: '讲述', t: 180, s: "专注表达感受", l: "全神贯注倾听" },
-            { act: names.B, role: '复述', t: 120, s: "像镜子一样复述", l: "确认理解" },
-            { act: 'BOTH', role: '交流', t: 60, s: "核对感受", l: "核对感受" },
-            { swap: true },
-            { act: names.B, role: '讲述', t: 180, s: "说出深层感受", l: "全然同在" },
-            { act: names.A, role: '复述', t: 120, s: "复述对方的内容", l: "感受被听见" },
-            { act: 'BOTH', role: '交流', t: 60, s: "总结对话", l: "总结对话" }
-        ];
-        phaseIdx = 0; showScreen('screen-interim'); setupInterim();
-    }
-
-    function setupInterim() {
-        const p = phases[phaseIdx];
-        if(phaseIdx===0) {
-            document.getElementById('interim-title').innerText = "准备开始";
-            document.getElementById('interim-desc').innerHTML = `由 <b>${names.A}</b> 先讲述`;
-        } else if(p.swap) {
-            document.getElementById('interim-title').innerText = "交换角色";
-            document.getElementById('interim-desc').innerHTML = `轮到 <b>${names.B}</b> 讲述`;
-        }
-    }
-
-    function resumeFlow() {
-        if(phases[phaseIdx].swap) { phaseIdx++; resumeFlow(); return; }
-        showScreen('screen-timer'); audioChunks = [];
-        if(mediaRecorder.state==='inactive') mediaRecorder.start();
-        runTimer();
-    }
-
-    function runTimer() {
-        const p = phases[phaseIdx];
-        document.getElementById('name-top').innerText = names.A;
-        document.getElementById('name-bottom').innerText = names.B;
-
-        const top = document.getElementById('pane-top');
-        const bot = document.getElementById('pane-bottom');
-        const tTop = document.getElementById('timer-top');
-        const tBot = document.getElementById('timer-bottom');
-
-        top.className = "pane"; bot.className = "pane";
-        tTop.innerText = formatTime(p.t); tBot.innerText = formatTime(p.t);
-
-        if (p.act === 'BOTH') {
-            top.classList.add('equal'); bot.classList.add('equal');
-            document.getElementById('instr-top').innerText = p.s;
-            document.getElementById('instr-bottom').innerText = p.s;
-            document.getElementById('role-top').innerText = "交流中";
-            document.getElementById('role-bottom').innerText = "交流中";
-        } else if (p.act === names.A) {
-            top.classList.add('active'); bot.classList.add('inactive');
-            document.getElementById('instr-top').innerText = p.s;
-            document.getElementById('instr-bottom').innerText = p.l;
-            document.getElementById('role-top').innerText = "讲述者";
-            document.getElementById('role-bottom').innerText = "倾听者";
-        } else {
-            bot.classList.add('active'); top.classList.add('inactive');
-            document.getElementById('instr-bottom').innerText = p.s;
-            document.getElementById('instr-top').innerText = p.l;
-            document.getElementById('role-bottom').innerText = "讲述者";
-            document.getElementById('role-top').innerText = "倾听者";
-        }
-
-        let t = p.t;
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            t--; tTop.innerText = formatTime(t); tBot.innerText = formatTime(t);
-            if(t<=0) finishPhase();
-        }, 1000);
-    }
-
-    function formatTime(s) {
-        const m = Math.floor(s/60).toString().padStart(2,'0');
-        const sec = (s%60).toString().padStart(2,'0');
-        return `${m}:${sec}`;
-    }
-
-    function finishPhase() { clearInterval(timerInterval); if(mediaRecorder.state==='recording') mediaRecorder.stop(); else proceedNext(); }
-    function proceedNext() { phaseIdx++; if(phaseIdx >= phases.length) showScreen('screen-paywall'); else { if(phases[phaseIdx].swap) { showScreen('screen-interim'); setupInterim(); } else { audioChunks=[]; mediaRecorder.start(); runTimer(); } } }
-    function skipPhase() { finishPhase(); }
-
-    // === API ===
-    async function startBatchProcessing() {
-        const apiKey = localStorage.getItem('sf_api_key');
-        if(!apiKey) { alert("请点击首页右上角设置 API Key"); return; }
-        document.getElementById('modal-loading').style.display = 'flex';
-
-        try {
-            const segments = await Promise.all(sessionSegments.map(async s => {
-                if(s.blob.size < 200) return {...s, text:"(无声音)"};
-                const formData = new FormData();
-                formData.append('file', s.blob, 'audio.webm');
-                formData.append('model', 'FunAudioLLM/SenseVoiceSmall');
-                const res = await fetch("https://api.siliconflow.cn/v1/audio/transcriptions", { method:"POST", headers:{"Authorization":`Bearer ${apiKey}`}, body:formData });
-                const d = await res.json();
-                return {...s, text: d.text || "(静默)"};
-            }));
-
-            const rawText = segments.map(s => `[阶段:${s.role}, 说话人:${s.speaker}] ${s.text}`).join('\n');
-            const prompt = `你是一位家庭治疗师。请处理录音稿。
-返回 JSON:
-{
-  "title": "简短标题(如:关于XX的沟通)", 
-  "insight": "HTML分析(<h4>小标题,<ul>列表)，包含情绪底色、深度觉察、双方贴士",
-  "reorganized_transcript": [ {"speaker": "Name", "text": "Content"} ]
-}
-注意：尝试将[Both]阶段拆分为A和B的发言。
-文本：\n${rawText}`;
-
-            const res2 = await fetch("https://api.siliconflow.cn/v1/chat/completions", {
-                method:"POST", headers:{"Authorization":`Bearer ${apiKey}`,"Content-Type":"application/json"},
-                body:JSON.stringify({model:"deepseek-ai/DeepSeek-V3", messages:[{role:"user",content:prompt}]})
-            });
-            const d2 = await res2.json();
-            const aiData = JSON.parse(d2.choices[0].message.content.replace(/```json/g,'').replace(/```/g,''));
-            
-            const finalRecord = { 
-                id: Date.now(), date: getTodayStr(), timestamp: Date.now(),
-                title: aiData.title, insight: aiData.insight,
-                rawSegments: segments, 
-                displayTranscript: aiData.reorganized_transcript || [] 
-            };
-            
-            const tx = db.transaction(['sessions'], 'readwrite');
-            tx.objectStore('sessions').add(finalRecord);
-            tx.oncomplete = () => loadDetail(finalRecord);
-
-        } catch(e) { console.error(e); alert("分析中断，保存中。"); saveOnly(); } 
-        finally { document.getElementById('modal-loading').style.display = 'none'; }
-    }
-
-    function saveOnly() { 
-        const rec = { id:Date.now(), date:getTodayStr(), timestamp:Date.now(), title:"未分析对话", insight:"无", rawSegments:sessionSegments, displayTranscript:[] };
-        const tx = db.transaction(['sessions'], 'readwrite');
-        tx.objectStore('sessions').add(rec);
-        tx.oncomplete = () => loadDetail(rec);
-    }
-
-    function loadDetail(r) {
-        document.getElementById('d-title').innerText = r.title; // 修复：使用动态标题
-        document.getElementById('d-date').innerText = r.date;
-        document.getElementById('d-insight').innerHTML = r.insight;
-        
-        try {
-            const fullBlob = new Blob(r.rawSegments.map(s=>s.blob), {type:supportedMime});
-            if(fullBlob.size>100) document.getElementById('d-full-audio').src = URL.createObjectURL(fullBlob);
-        } catch(e) {}
-
-        const listToShow = (r.displayTranscript && r.displayTranscript.length > 0) ? r.displayTranscript : r.rawSegments;
-        document.getElementById('d-transcript-box').innerHTML = listToShow.map((item, i) => {
-            const isA = item.speaker.includes(names.A) || item.speaker === 'A';
-            const align = isA ? 'left' : (item.speaker === 'Both' ? 'center' : 'right');
-            
-            return `
-            <div class="chat-row ${align}">
-                <div class="chat-name">${item.speaker}</div>
-                <div class="chat-bubble">${item.text}</div>
-            </div>`;
-        }).join('');
-        
-        showScreen('screen-detail');
-    }
-
-    // List & Calendar
-    let filterDate = null;
-    function loadHistoryList() {
-        const tx = db.transaction(['sessions'], 'readonly');
-        tx.objectStore('sessions').getAll().onsuccess = e => {
-            let list = e.target.result.sort((a,b)=>b.timestamp-a.timestamp);
-            renderCalendar(list);
-            if(filterDate) list = list.filter(i => i.date === filterDate);
-            document.getElementById('history-list-container').innerHTML = list.map(i => `
-                <div class="history-card" onclick="fetchAndShow(${i.id})">
-                    <div style="font-size:24px;margin-right:15px;">${i.title.includes('未分析')?'🎙':'✨'}</div>
-                    <div style="flex:1;"><div style="font-weight:600;color:#333;">${i.title}</div><div style="font-size:12px;color:#999;">${i.date}</div></div>
-                </div>
-            `).join('') || `<div style="text-align:center;color:#ccc;margin-top:20px;">暂无记录</div>`;
-            document.getElementById('reset-filter').style.display = filterDate ? 'block' : 'none';
-        };
-    }
-    
-    function renderCalendar(list) {
-        const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
-        const today = new Date(); const days = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
-        const dataSet = new Set(list.map(i=>i.date));
-        for(let d=1; d<=days; d++) {
-            const dateStr = `${today.getFullYear()}/${String(today.getMonth()+1).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
-            const el = document.createElement('div'); el.className = 'cal-day ' + (dataSet.has(dateStr)?'has-data':'');
-            if(filterDate === dateStr) el.classList.add('active');
-            el.innerText = d; el.onclick = () => { filterDate = dateStr; loadHistoryList(); };
-            grid.appendChild(el);
-        }
-    }
-    function toggleCalendar() { document.getElementById('cal-grid').classList.toggle('show'); }
-    function resetFilter() { filterDate = null; loadHistoryList(); }
-    window.fetchAndShow = id => { const tx = db.transaction(['sessions'], 'readonly'); tx.objectStore('sessions').get(id).onsuccess = e => loadDetail(e.target.result); }
-
-    function switchTab(t) {
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        document.querySelectorAll('.tab-item').forEach(i=>i.classList.remove('active'));
-        document.getElementById('btn-'+t).classList.add('active');
-        const hideTabs = ['screen-timer','screen-interim','screen-paywall'];
-        document.getElementById('tab-bar').style.display = hideTabs.includes('tab-'+t) ? 'none' : 'flex';
-        if(t==='home') showScreen('tab-home');
-        if(t==='history') { showScreen('tab-history'); loadHistoryList(); }
-    }
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        const hideTabs = ['screen-timer','screen-interim','screen-paywall','screen-help'];
-        document.getElementById('tab-bar').style.display = hideTabs.includes(id) ? 'none' : 'flex';
-    }
-    function openSettings() { document.getElementById('modal-settings').style.display='flex'; document.getElementById('apiKeyInput').value=localStorage.getItem('sf_api_key')||''; }
-    function saveSettings() { localStorage.setItem('sf_api_key', document.getElementById('apiKeyInput').value.trim()); document.getElementById('modal-settings').style.display='none'; }
-</script>
+<script src="script.js"></script>
 </body>
 </html>
