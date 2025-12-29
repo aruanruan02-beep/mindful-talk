@@ -252,13 +252,38 @@ function proceedNext() {
 }
 
 // 激活与数据
+// === 替换原有的 verifyAndUnlock 函数 ===
+
 function verifyAndUnlock() {
     const input = document.getElementById('activationCode').value.trim().toUpperCase();
-    if (localStorage.getItem('is_vip_user') === 'true') { startBatchProcessing(); return; }
+    
+    // 1. 如果已经是 VIP，直接重置状态并开始
+    if (localStorage.getItem('is_vip_user') === 'true') { 
+        savedSessionId = null;   // <--- 强制重置 ID
+        isBatchStarted = false;  // <--- 强制重置锁
+        startBatchProcessing(); 
+        return; 
+    }
+
+    // 2. 校验激活码
     if (VALID_CODES.includes(input)) {
         localStorage.setItem('is_vip_user', 'true');
-        showNiceAlert("激活成功", "即将开始分析...", "🎉", () => startBatchProcessing());
-    } else { showNiceAlert("无效", "请检查激活码", "🥺"); }
+        
+        showNiceAlert("激活成功", "即将开始分析...", "🎉", () => {
+            // 在点击“知道了”之后执行：
+            savedSessionId = null;   // <--- 强制重置 ID
+            isBatchStarted = false;  // <--- 强制重置锁
+            
+            // 再次检查有没有音频数据
+            if (!sessionSegments || sessionSegments.length === 0) {
+                alert("未找到录音数据，请重新上传或录音");
+                return;
+            }
+            startBatchProcessing();
+        });
+    } else { 
+        showNiceAlert("无效", "请检查激活码", "🥺"); 
+    }
 }
 function copyWeChat() { navigator.clipboard.writeText("Mindful_Dev").then(()=>showNiceAlert("微信号已复制","Mindful_Dev","📋")); }
 function clearData() { if(confirm("清除所有数据?")) { localStorage.clear(); indexedDB.deleteDatabase(DB_NAME); location.reload(); } }
@@ -742,3 +767,54 @@ function showScreen(id) {
 }
 function openSettings() { document.getElementById('modal-settings').style.display='flex'; document.getElementById('apiKeyInput').value=localStorage.getItem('sf_api_key')||''; }
 function saveSettings() { localStorage.setItem('sf_api_key', document.getElementById('apiKeyInput').value.trim()); document.getElementById('modal-settings').style.display='none'; }
+
+// ==========================================
+// NEW: 上传文件 + 激活校验逻辑
+// ==========================================
+const uploadInput = document.getElementById('audioUpload');
+
+if (uploadInput) {
+    uploadInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('audio/')) {
+            showNiceAlert("格式不支持", "请上传音频文件", "📁");
+            this.value = ''; 
+            return;
+        }
+
+        // 1. 准备数据
+        names.A = document.getElementById('nameA').value.trim() || "A";
+        names.B = document.getElementById('nameB').value.trim() || "B";
+
+        sessionSegments = [{
+            blob: file,
+            speaker: "Both",      
+            role: "文件上传",      
+            text: ""              
+        }];
+
+        // 2. 关键：暴力重置所有状态锁
+        // 这能确保 startBatchProcessing 不会因为检测到旧状态而拒绝运行
+        savedSessionId = null;
+        isBatchStarted = false;
+        isProcessingEnd = true; 
+
+        // 3. 检查 VIP
+        const isVip = localStorage.getItem('is_vip_user') === 'true';
+
+        if (isVip) {
+            showNiceAlert("文件已就绪", `文件名：${file.name}\n即将开始 AI 分析...`, "📂", () => {
+                savedSessionId = null;  // 再次确保重置
+                isBatchStarted = false;
+                startBatchProcessing();
+            });
+        } else {
+            // 去解锁页面，依靠上面的新版 verifyAndUnlock 来启动
+            showScreen('screen-paywall');
+        }
+
+        this.value = '';
+    });
+}

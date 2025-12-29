@@ -23,9 +23,16 @@
             <div style="font-weight:500; letter-spacing:1px; font-size: 13px;">START</div>
         </div>
 
+
         <div class="input-area">
             <input type="text" id="nameA" placeholder="讲述者 (A)">
             <input type="text" id="nameB" placeholder="倾听者 (B)">
+        </div>
+
+        <input type="file" id="audioUpload" accept="audio/*" style="display: none;">
+
+        <div class="upload-trigger" onclick="document.getElementById('audioUpload').click()">
+            📂 上传本地录音文件
         </div>
         
         <div class="help-btn" onclick="showScreen('screen-help')">📖 使用指南</div>
